@@ -1,3 +1,4 @@
-[submodule "MAD"]
+[submodule "mad-ng"]
 	path = mad-ng
-	url = https://github.com/hz-b/MAD.git
+	url = https://github.com/jbengtsson/mad-ng.git
+	branch = mad-ng_jb
