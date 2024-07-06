@@ -100,27 +100,41 @@ The *gtpsa* C++ <- C functions are in:
 
 	../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
 
-		mono(idx_t i, std::vector<ord_t> *m)
+		# Parameters: (constant part, monomial index, value).
+		setVariable(const base_type v, const idx_t iv = 0, const base_type scale = 0).
+
+		# Return order & exponents for monomial with index i.
+		mono(idx_t i, std::vector<ord_t> \*m)
+		
+		# Return index for monomial m.
+		#   use string for the exponents:
 		index(std::string s)
+		#   use arrau fpr the exponents:
 		index(const std::vector<ord_t> &m)
+		#   sparse monomials [(i, o)]:
 		indexsm(const std::vector<int> m)
-		cycle(const idx_t i, std::vector<ord_t> *m)
+		
+		# Return a pair (.first, .second) for ???
+		cycle(const idx_t i, std::vector<ord_t> \*m)
 
 		cst()
 
+		# Get constant term.
 		get(void)                           get()
+
+		# Get mon
 		get(const idx_t i)                  get(46)
 		get(const std::string s)            get()
 		get(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
 		getsm(const std::vector<int> &m)
 
-		set
+		set(void)
+		...
 
-		getv
-		setv
+		# The 1st parameter is offset - 1 to skip constant part: 0..
+		getv(idx_t i, std::vector<base_type> *v)
+		setv(idx_t i, const std::vector<base_type> &v)
 
-		getsm
-		setVariable (Set monomial: e.g. setVariable(a, 0e0, 2, 0e0)
 		rgetorder
 		print
 		cst
@@ -145,11 +159,12 @@ The *gtpsa* C++ <- C functions are in:
 
 		rgetOrder
 
-		mono(const idx_t i, std::vector<ord_t> *m)
+		setvar(const GTPSA_BASE_T v, const idx_t iv_ = 0, const GTPSA_BASE_T scl_ = 0)
+		mono(const idx_t i, std::vector<ord_t> \*m)
 		idxs(const std::string s)
 		idxm(const std::vector<ord_t> &m)
 		idxsm(const std::vector<int> m)
-		cycle(const idx_t i, std::vector<ord_t> *m, GTPSA_BASE_T *v)
+		cycle(const idx_t i, std::vector<ord_t> *m, GTPSA_BASE_T \*v)
 
 		get0(void)                           get()
 		geti(const idx_t i)                  get(46)
@@ -157,9 +172,9 @@ The *gtpsa* C++ <- C functions are in:
 		getm(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
 		getsm(const std::vector<int> &m)
 
-		getv(const idx_t i, std::vector<GTPSA_BASE_T> *v)
-
-		setvar (Set monomial)
+		# The 1st parameter is offset - 1 to skip constant part: 0..
+		getv(const idx_t i, std::vector<GTPSA_BASE_T> \*v)
+		setv(const idx_t i, const std::vector<GTPSA_BASE_T> &v)
 
 		a*x[0]+b
 		set0(const num_t a, const num_t b)
@@ -172,8 +187,6 @@ The *gtpsa* C++ <- C functions are in:
 
 		a*x[m]+b
 		setm(const std::vector<ord_t> &m, const num_t a, const num_t b)
-
-		setv(const idx_t i, const std::vector<num_t> &v)
 
 		rderiv
 		rinteg
@@ -220,6 +233,8 @@ The *gtpsa* print functions are in:
 
 	../src/gtpsa/mad-ng/src/mad_tpsa.c
 	
+		mad_tpsa_setvar(tpsa_t *t, num_t v, idx_t iv_, num_t scl_)
+
 		mad_tpsa_mono(const tpsa_t \*t, idx_t i,  ssz_t n, ord_t m[])
 		mad_tpsa_idxs(const tpsa_t \*t, ssz_t n, str_t s)
 		mad_tpsa_idxm(const tpsa_t \*t, ssz_t n, const ord_t m[])
@@ -232,6 +247,7 @@ The *gtpsa* print functions are in:
 		mad_tpsa_getm(const tpsa_t \*t, ssz_t n, const ord_t m[])
 		mad_tpsa_getsm(const tpsa_t \*t, ssz_t n, const int m[])
 
+		# The 2nd parameter is offset - 1 to skip constant part: 0..
 		mad_tpsa_getv(const tpsa_t \*t, idx_t i, ssz_t n, num_t v[])
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_io.c
