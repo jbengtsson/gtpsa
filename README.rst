@@ -220,7 +220,7 @@ The *gtpsa* print functions are in:
 
 	../src/gtpsa/mad-ng/src/mad_tpsa.c
 	
-		mad_tpsa_mono(const tpsa_t *t, idx_t i,  ssz_t n, ord_t m[])
+		mad_tpsa_mono(const tpsa_t \*t, idx_t i,  ssz_t n, ord_t m[])
 		mad_tpsa_idxs(const tpsa_t *t, ssz_t n, str_t s)
 		mad_tpsa_idxm(const tpsa_t *t, ssz_t n, const ord_t m[])
 		mad_tpsa_idxsm(const tpsa_t *t, ssz_t n, const int m[])
