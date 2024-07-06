@@ -159,12 +159,12 @@ The *gtpsa* C++ <- C functions are in:
 
 		rgetOrder
 
-		setvar(const GTPSA_BASE_T v, const idx_t iv_ = 0, const GTPSA_BASE_T scl_ = 0)
+		setvar(const GTPSA_BASE_T v, const idx_t iv = 0, const GTPSA_BASE_T scl = 0)
 		mono(const idx_t i, std::vector<ord_t> \*m)
 		idxs(const std::string s)
 		idxm(const std::vector<ord_t> &m)
 		idxsm(const std::vector<int> m)
-		cycle(const idx_t i, std::vector<ord_t> *m, GTPSA_BASE_T \*v)
+		cycle(const idx_t i, std::vector<ord_t> \*m, GTPSA_BASE_T \*v)
 
 		get0(void)                           get()
 		geti(const idx_t i)                  get(46)
@@ -233,7 +233,7 @@ The *gtpsa* print functions are in:
 
 	../src/gtpsa/mad-ng/src/mad_tpsa.c
 	
-		mad_tpsa_setvar(tpsa_t *t, num_t v, idx_t iv_, num_t scl_)
+		mad_tpsa_setvar(tpsa_t \*t, num_t v, idx_t iv, num_t scl)
 
 		mad_tpsa_mono(const tpsa_t \*t, idx_t i,  ssz_t n, ord_t m[])
 		mad_tpsa_idxs(const tpsa_t \*t, ssz_t n, str_t s)
