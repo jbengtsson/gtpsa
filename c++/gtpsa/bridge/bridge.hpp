@@ -179,7 +179,7 @@ namespace gtpsa {
     /**
      * @brief a*x[0]+b
      */
-    inline void set(base_type a, base_type b) { this->m_impl.set0(  a, b); }
+    inline void set(base_type a, base_type b) { this->m_impl.set0(a, b); }
 
     /**
      * @brief a*x[i]+b
@@ -211,7 +211,7 @@ namespace gtpsa {
 
 
     inline void setVariable
-    (const base_type v, const idx_t iv= 0, const base_type scale = 0) {
+    (const base_type v, const idx_t iv = 0, const base_type scale = 0) {
       this->m_impl.setvar(v, iv, scale);
     }
 

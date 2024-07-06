@@ -185,6 +185,36 @@ double acos2(const double sin, const double cos)
 }
 
 
+gtpsa::tpsa get_mns(const gtpsa::tpsa &a, const int no1, const int no2)
+{
+#if 0
+  gtpsa::tpsa b;
+
+  danot_(no1-1);
+  b = -a;
+  danot_(no2);
+  b += a;
+  danot_(no_tps);
+
+  return b;
+#endif
+}
+
+
+gtpsa::ss_vect<gtpsa::tpsa> get_mns
+(const gtpsa::ss_vect<gtpsa::tpsa> &x, const int no1, const int no2)
+{
+#if 0
+  gtpsa::ss_vect<gtpsa::tpsa> y;
+
+  for (int k = 0; k < nv_tps; k++)
+    y[k] = get_mns(x[k], no1, no2);
+
+  return y;
+#endif
+}
+
+
 /**
  * Compute norm of tpsa:
  *    |a| = sum | a_k |
@@ -207,7 +237,7 @@ double compute_norm(gtpsa::tpsa &a)
 
 
 /**
- *  𝐷𝑎𝑓𝑙𝑜 in Forest's F77 LieLib.
+ *  Daflo in Forest's F77 LieLib.
  *    y = v * nabla * x
  */
 gtpsa::tpsa v_to_tps(const gtpsa::ss_vect<gtpsa::tpsa> &v, const gtpsa::tpsa &x)
@@ -224,7 +254,7 @@ gtpsa::tpsa v_to_tps(const gtpsa::ss_vect<gtpsa::tpsa> &v, const gtpsa::tpsa &x)
 
 
 /**
- * 𝐸𝑥𝑝𝑓𝑙𝑜 in Forest's F77 LieLib:
+ * Expflo in Forest's F77 LieLib:
  *    y = exp(v*nabla) * x
  *
  * @param v
@@ -281,7 +311,7 @@ gtpsa::ss_vect<gtpsa::tpsa> exp_v_to_map
 /**
  * @brief Factor map:
  *
- * 𝐹𝑙𝑜𝑓𝑎𝑐 in Forest's F77 LieLib.
+ * Flofac in Forest's F77 LieLib.
  * Factor map:
  *   M = M_2 ... * M_n
   */
@@ -354,7 +384,7 @@ void scl_mns(gtpsa::tpsa &mn)
 
 
 /**
- * 𝐼𝑛𝑡𝑑 in Forest's F77 LieLib.
+ * Intd in Forest's F77 LieLib.
  * E. Forest, M. Berz, J. Irwin 𝑁𝑜𝑟𝑚𝑎𝑙 𝐹𝑜𝑟𝑚 𝑀𝑒𝑡ℎ𝑜𝑑𝑠 𝑓𝑜𝑟 𝐶𝑜𝑚𝑝𝑙𝑖𝑐𝑎𝑡𝑒𝑑 𝑃𝑒𝑟𝑖𝑜𝑑𝑖𝑐 𝑆𝑦𝑠𝑡𝑒𝑚𝑠:
  * 𝐴 𝐶𝑜𝑚𝑝𝑙𝑒𝑡𝑒 𝑆𝑜𝑙𝑢𝑡𝑖𝑜𝑛 𝑈𝑠𝑖𝑛𝑔 𝐷𝑖𝑓𝑓𝑒𝑟𝑒𝑛𝑡𝑖𝑎𝑙 𝐴𝑙𝑔𝑒𝑏𝑟𝑎 𝑎𝑛𝑑 𝐿𝑖𝑒 𝑂𝑝𝑒𝑟𝑎𝑡𝑜𝑟𝑠 Part. Accel. 24,
  * 91-107 (1989):
@@ -365,7 +395,7 @@ void scl_mns(gtpsa::tpsa &mn)
  * @param t_map
  * @return
  */
-gtpsa::tpsa M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
   const int ps_dim = 6;
 
@@ -579,7 +609,14 @@ void ss_vect_to_param
 
 gtpsa::tpsa gtpsa::M_to_h_DF(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
-  // Workaround because gtpsa map compose can't handle parameter dependence.
+  // Liefact in Forest's F77 LieLib.
+  // A. Dragt, J. Finn "Lie Series and Invariant Functions for Analytic
+  // Symplectic maps" J. Math. Phys. 17, 2215-2227 (1976).
+  // Dragt-Finn factorization:
+  //   M ->  M_lin * exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:)
+  //
+  // Workaround because the CERN gtpsa map compose can't handle parameter
+  // dependence.
   ord_t no, po;
   int   np;
 
@@ -605,6 +642,24 @@ gtpsa::tpsa gtpsa::M_to_h_DF(const gtpsa::ss_vect<gtpsa::tpsa> &M)
     h = M_to_h(M_to_M_fact(M));
     return h;
   }
+}
+
+
+gtpsa::ss_vect<gtpsa::tpsa> gtpsa::h_DF_to_M
+(const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
+ const int k2)
+{
+  // Fexpo in Forest's F77 LieLib.
+  // Compute map from Dragt-Finn factorisation:
+  //   M = exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:) * X
+#if 0
+  gtpsa::ss_vect<gtpsa::tpsa> v_DF;
+
+  v_DF = h_to_v(h_DF);
+  cout << v_DF;
+  exit(0);
+  return exp_v_fac_to_M(v_DF, x, k1, k2, 1e0);
+#endif
 }
 
 
@@ -852,7 +907,7 @@ void compute_M_diag(const std::shared_ptr<gtpsa::mad::desc> &desc, MNFType &MNF)
 
 
 gtpsa::tpsa get_g
-(const gtpsa::tpsa nu_x, const gtpsa::tpsa nu_y, const gtpsa::tpsa &h)
+(const double nu_x, const double nu_y, const gtpsa::tpsa &h)
 {
   // Compute g = (1-R)^-1 * h
 
@@ -860,7 +915,7 @@ gtpsa::tpsa get_g
   const auto no   = desc->maxOrd();
   const auto nv   = desc->getNv();
 
-  std::vector<ord_t> jj1(nv), jj2(7);
+  std::vector<ord_t> jj1(nv), jj2(nv);
   double             re, im;
 
   auto h_re  = gtpsa::tpsa(desc, no);
@@ -1010,8 +1065,6 @@ void gtpsa::GoFix
 }
 
 
-#if 0
-
 MNFType map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &map)
 {
   const auto desc = map[0].getDescription();
@@ -1022,7 +1075,7 @@ MNFType map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &map)
   double
     nu0[2];
   MNFType
-    MNF;
+    MNF = MNFType(desc, no);
 
   auto hn    = gtpsa::tpsa(desc, no);
   auto hn_re = gtpsa::tpsa(desc, no);
@@ -1033,38 +1086,43 @@ MNFType map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &map)
 
   auto Id    = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto A     = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto nus   = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto M_Fl  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto map2  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
 
   Id.set_identity();
 
-  danot_(no-1);
+  // danot_(no-1);
 
-  MNF.M_res = MNF.M = map;
+  MNF.M = map.clone();
 
-  danot_(no);
+  // danot_(no);
 
-#if 0
   // Find fixed point.
-  GoFix(map, MNF.A0, MNF.A0_inv, no);
+  gtpsa::GoFix(map, MNF.A0);
 
   // Translate to fix point.
-  map = MNF.A0_inv*map*MNF.A0;
-
-  print_map("\nA0:", A0);
-  print_map("\nM_map:", map);
+#if 0
+  map = gtpsa::compose(MNF.A0_inv, gtpsa::compose(map, MNF.A0));
 #endif
 
-  compute_M_diag(MNF);
+  print_map("\nA0:", MNF.A0);
+  print_map("\nM_map:", map);
 
-  M_Fl = Inv(MNF.A0*MNF.A1)*MNF.M*MNF.A0*MNF.A1;
+  compute_M_diag(desc, MNF);
+
+  M_Fl =
+    gtpsa::compose
+    (gtpsa::minv(gtpsa::compose(MNF.A0, MNF.A1)),
+     gtpsa::compose(MNF.M, gtpsa::compose(MNF.A0, MNF.A1)));
 
   print_map("\nM_Fl:\n", M_Fl);
 
   MNF.K = 0e0;
   for (auto k = 0; k < 2; k++) {
+    // .get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
+#if 0
     nu0[k] = atan2(MNF.R[2*k][2*k+1], MNF.R[2*k][2*k]);
+#endif
     if (nu0[k] < 0e0) nu0[k] += 2e0*M_PI;
     nu0[k] /= 2e0*M_PI;
     MNF.K -= M_PI*nu0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
@@ -1074,27 +1132,28 @@ MNFType map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &map)
        << "nu0 = (" << nu0[X_] << ", " << nu0[Y_] << ")" << "\n";
 
   // Coasting beam.
-  MNF.K += h_ijklm(M_Fl[ct_], 0, 0, 0, 0, 1)*sqr(Id[delta_])/2e0;
-
 #if 0
+  MNF.K += h_ijklm(M_Fl[ct_], 0, 0, 0, 0, 1)*sqr(Id[delta_])/2e0;
+#endif
+
   MNF.g = 0e0;
   for (auto k = 3; k <= no; k++) {
     n = pow(2, k-3);
 
-    map2 = M_Fl*Inv(MNF.R*FExpo(MNF.K, Id, 3, k-1, -1));
-    hn = Intd(get_mns(map2, k-1, k-1), -1e0);
+    map2 =
+      gtpsa::compose
+      (M_Fl, gtpsa::minv
+       (gtpsa::compose(MNF.R, h_DF_to_M(MNF.K, Id, 3, k-1))));
+    hn = M_to_h(get_mns(map2, k-1, k-1));
     gn = get_g(nu0[X_], nu0[Y_], hn);
     MNF.g += gn;
     CtoR(hn, hn_re, hn_im);
     Kn = RtoC(get_Ker(hn_re), get_Ker(hn_im));
     MNF.K += Kn;
 
-    A = FExpo(gn, Id, k, k, -1);
-    M_Fl = Inv(A)*M_Fl*A;
+    A = h_DF_to_M(gn, Id, k, k);
+    M_Fl = gtpsa::compose(gtpsa::minv(A), gtpsa::compose(M_Fl, A));
   }
-#endif
 
   return MNF;
 }
-
-#endif

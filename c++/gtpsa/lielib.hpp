@@ -5,7 +5,7 @@
 // #include <pybind11/stl.h>
 
 
-typedef class MNFType
+class MNFType
 {
 private:
 public:
@@ -19,9 +19,15 @@ public:
     A0, A0_inv,     // Linear transformation to fixed point.
     A1, A1_inv,     // Linear transformation to Floquet space.
     A_nl, A_nl_inv, // Nonlinear transformation to Floquet space.
-    R,              // Floquet space rotation.
-    nus;            // Tune shift.
-} MNFType;
+    R;              // Floquet space rotation.
+
+  MNFType(const std::shared_ptr<gtpsa::mad::desc> &desc, const int no):
+    K(desc, no), g(desc, no), M(desc, no), M_res(desc, no), A0(desc, no),
+    A0_inv(desc, no), A1(desc, no), A1_inv(desc, no), A_nl(desc, no),
+    A_nl_inv(desc, no), R(desc, no)
+  { }
+
+};
 
 
 void print_map(const std::string &str, const gtpsa::ss_vect<gtpsa::tpsa> &M);
@@ -42,7 +48,11 @@ namespace gtpsa {
    *
    */
 
+  tpsa M_to_h(const ss_vect<tpsa> &M);
   tpsa M_to_h_DF(const ss_vect<tpsa> &t_map);
+  ss_vect<tpsa> h_DF_to_M
+  (const tpsa &h_DF, const ss_vect<tpsa> &x, const int k1, const int k2);
+
   void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
   tpsa RtoC(const tpsa &a_re, const tpsa &a_im);
   void GoFix(const ss_vect<tpsa> &map, ss_vect<tpsa> &A0);

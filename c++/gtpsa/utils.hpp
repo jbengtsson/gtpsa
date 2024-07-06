@@ -10,7 +10,8 @@
 namespace gtpsa {
     template<class T>
     inline auto cst(T &v) { return v.cst(); }
-    //inline std::complex<double> cst(gtpsa::ctpsa &v) { return v.get_complex(); }
+    // inline std::complex<double> cst(gtpsa::ctpsa &v)
+    // { return v.get_complex(); }
     inline double cst(double v) { return v; }
     inline std::complex<double> cst(std::complex<double> v) { return v; }
 
@@ -24,7 +25,8 @@ namespace gtpsa {
     inline T same_as_instance(const T &v) { return T(v, init::same); }
 
     inline auto same_as_instance(const double &v) { return double(0e0); }
-    inline auto same_as_instance(const std::complex<double> &v) { return double(0e0); }
+    inline auto same_as_instance(const std::complex<double> &v)
+    { return double(0e0); }
 
 
 } // namespace gtpa
