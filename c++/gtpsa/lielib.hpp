@@ -19,12 +19,12 @@ public:
     A0, A0_inv,     // Linear transformation to fixed point.
     A1, A1_inv,     // Linear transformation to Floquet space.
     A_nl, A_nl_inv, // Nonlinear transformation to Floquet space.
-    R;              // Floquet space rotation.
+    R;              // Map in Floquet space.
 
   MNFType(const std::shared_ptr<gtpsa::mad::desc> &desc, const int no):
-    K(desc, no), g(desc, no), M(desc, no), M_res(desc, no), A0(desc, no),
-    A0_inv(desc, no), A1(desc, no), A1_inv(desc, no), A_nl(desc, no),
-    A_nl_inv(desc, no), R(desc, no)
+    K(desc, no), g(desc, no), M(desc, no-1), M_res(desc, no-1), A0(desc, 1),
+    A0_inv(desc, 1), A1(desc, 1), A1_inv(desc, 1), A_nl(desc, no-1),
+    A_nl_inv(desc, no-1), R(desc, 1)
   { }
 
 };
@@ -55,7 +55,8 @@ namespace gtpsa {
 
   void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
   tpsa RtoC(const tpsa &a_re, const tpsa &a_im);
-  void GoFix(const ss_vect<tpsa> &map, ss_vect<tpsa> &A0);
+  ss_vect<tpsa> GoFix(const ss_vect<tpsa> &map);
+  MNFType map_norm(const ss_vect<tpsa> &M);
 
 } // namespace gtpsa
 
