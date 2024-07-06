@@ -221,18 +221,18 @@ The *gtpsa* print functions are in:
 	../src/gtpsa/mad-ng/src/mad_tpsa.c
 	
 		mad_tpsa_mono(const tpsa_t \*t, idx_t i,  ssz_t n, ord_t m[])
-		mad_tpsa_idxs(const tpsa_t *t, ssz_t n, str_t s)
-		mad_tpsa_idxm(const tpsa_t *t, ssz_t n, const ord_t m[])
-		mad_tpsa_idxsm(const tpsa_t *t, ssz_t n, const int m[])
-		mad_tpsa_cycle(const tpsa_t *t, idx_t i, ssz_t n, ord_t m[], num_t *v)
+		mad_tpsa_idxs(const tpsa_t \*t, ssz_t n, str_t s)
+		mad_tpsa_idxm(const tpsa_t \*t, ssz_t n, const ord_t m[])
+		mad_tpsa_idxsm(const tpsa_t \*t, ssz_t n, const int m[])
+		mad_tpsa_cycle(const tpsa_t \*t, idx_t i, ssz_t n, ord_t m[], num_t \*v)
 
-		mad_tpsa_get0(const tpsa_t *t)
-		mad_tpsa_geti(const tpsa_t *t, idx_t i)
-		mad_tpsa_gets(const tpsa_t *t, ssz_t n, str_t s)
-		mad_tpsa_getm(const tpsa_t *t, ssz_t n, const ord_t m[])
-		mad_tpsa_getsm(const tpsa_t *t, ssz_t n, const int m[])
+		mad_tpsa_get0(const tpsa_t \*t)
+		mad_tpsa_geti(const tpsa_t \*t, idx_t i)
+		mad_tpsa_gets(const tpsa_t \*t, ssz_t n, str_t s)
+		mad_tpsa_getm(const tpsa_t \*t, ssz_t n, const ord_t m[])
+		mad_tpsa_getsm(const tpsa_t \*t, ssz_t n, const int m[])
 
-		mad_tpsa_getv(const tpsa_t *t, idx_t i, ssz_t n, num_t v[])
+		mad_tpsa_getv(const tpsa_t \*t, idx_t i, ssz_t n, num_t v[])
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_io.c
 
@@ -258,8 +258,8 @@ The general *gtpsa* C++ <- C interface is in:
 		getParametersMaximumOrder
 		getTotalNumber
 		getOrderPerParameter
-		getNv(ord_t *mo_=0, int *np_=0, ord_t *po_=0)
-		maxOrd(int nn=0, ord_t *no=nullptr)
+		getNv(ord_t \*mo_=0, int \*np_=0, ord_t \*po_=0)
+		maxOrd(int nn=0, ord_t \*no=nullptr)
 		maxLen(ord_t mo)
 		trunc(const ord_t to) (From mad_desc_gtrunc)
 
