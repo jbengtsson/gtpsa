@@ -86,7 +86,7 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 	../src/gtpsa/python/src/gtpsa.cc
 
 		print
-		(Sets *eps* 1e-30 vs. 0 for the *gtpsa* print function to supress printing ofzeroes)
+		(Sets *eps* 1e-30 vs. 0 for the *gtpsa* print function to supress printing of zeroes)
 		length
 		getDescription
 		get
@@ -100,10 +100,20 @@ The *gtpsa* C++ <- C functions are in:
 
 	../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
 
-		mono
-		index
+		mono(idx_t i, std::vector<ord_t> *m)
+		index(std::string s)
+		index(const std::vector<ord_t> &m)
+		indexsm(const std::vector<int> m)
+		cycle(const idx_t i, std::vector<ord_t> *m)
 
-		get
+		cst()
+
+		get(void)                           get()
+		get(const idx_t i)                  get(46)
+		get(const std::string s)            get()
+		get(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
+		getsm(const std::vector<int> &m)
+
 		set
 
 		getv
@@ -135,13 +145,19 @@ The *gtpsa* C++ <- C functions are in:
 
 		rgetOrder
 
-		mono
+		mono(const idx_t i, std::vector<ord_t> *m)
+		idxs(const std::string s)
+		idxm(const std::vector<ord_t> &m)
+		idxsm(const std::vector<int> m)
+		cycle(const idx_t i, std::vector<ord_t> *m, GTPSA_BASE_T *v)
 
-		get0(void)
-		geti(const idx_t i)
-		gets(const std::string s)
-		getm(const std::vector<ord_t> &m)
-		getv(const idx_t i, std::vector<num_t> *v)
+		get0(void)                           get()
+		geti(const idx_t i)                  get(46)
+		gets(const std::string s)            get()
+		getm(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
+		getsm(const std::vector<int> &m)
+
+		getv(const idx_t i, std::vector<GTPSA_BASE_T> *v)
 
 		setvar (Set monomial)
 
@@ -201,6 +217,22 @@ The *gtpsa* C++ <- C functions are in:
 		Remark: It only prints leading order; *level* parameter not implemented.
 
 The *gtpsa* print functions are in:
+
+	../src/gtpsa/mad-ng/src/mad_tpsa.c
+	
+		mad_tpsa_mono(const tpsa_t *t, idx_t i,  ssz_t n, ord_t m[])
+		mad_tpsa_idxs(const tpsa_t *t, ssz_t n, str_t s)
+		mad_tpsa_idxm(const tpsa_t *t, ssz_t n, const ord_t m[])
+		mad_tpsa_idxsm(const tpsa_t *t, ssz_t n, const int m[])
+		mad_tpsa_cycle(const tpsa_t *t, idx_t i, ssz_t n, ord_t m[], num_t *v)
+
+		mad_tpsa_get0(const tpsa_t *t)
+		mad_tpsa_geti(const tpsa_t *t, idx_t i)
+		mad_tpsa_gets(const tpsa_t *t, ssz_t n, str_t s)
+		mad_tpsa_getm(const tpsa_t *t, ssz_t n, const ord_t m[])
+		mad_tpsa_getsm(const tpsa_t *t, ssz_t n, const int m[])
+
+		mad_tpsa_getv(const tpsa_t *t, idx_t i, ssz_t n, num_t v[])
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_io.c
 
