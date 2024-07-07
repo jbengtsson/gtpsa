@@ -72,7 +72,13 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 		| compose
 		| M_to_h_DF
 
-	../src/gtpsa/python/src/gtpsa.cc
+
+	../src/gtpsa/python/src/ss_vect.cc
+
+		| maximum_orders()
+		| number_of_variables()
+		| maximum_orders()
+		| truncate()
 
 	../src/gtpsa/python/src/ss_vect.cc
 
@@ -88,7 +94,7 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 		| print
 		| (Sets *eps* 1e-30 vs. 0 for the *gtpsa* print function to supress printing of zeroes)
 		| length
-		| getDescription
+		| get_description
 		| get
 		| set
 		| getv
@@ -226,6 +232,7 @@ The *gtpsa* C++ <- C functions are in:
 		| show()
 		| # For TPSA vector: only prints leading order - *level* parameter not implemented.
 		| show(stdout, level)
+		| print("", eps, 0)
 		| operator<<
 
 
@@ -266,8 +273,12 @@ The general *gtpsa* C++ <- C interface is in:
 	../src/gtpsa/c++/gtpsa/desc.cc
 
 		| show
+		| # Prints out info, e.g.:
+		| #   id=2, nn=7, nv=7, np=0, mo=5, po=0, to=5, uno=0, no=[5555555]
+		| info(FILE * fp = nullptr)
+		| # Get all the info.
+		| getInfo()
 		| getDescription
-		| getinfo
 		| getNumberOfVariables
 		| getVariablesMaximumOrder
 		| getNumberOfParameters
@@ -277,7 +288,7 @@ The general *gtpsa* C++ <- C interface is in:
 		| getNv(ord_t \*mo_=0, int \*np_=0, ord_t \*po_=0)
 		| maxOrd(int nn=0, ord_t \*no=nullptr)
 		| maxLen(ord_t mo)
-		| trunc(const ord_t to) (From mad_desc_gtrunc)
+		| trunc(const ord_t to)
 
 	../src/gtpsa/c++/gtpsa/ss_vect.h
 
@@ -333,6 +344,11 @@ TPSA descriptor operations:
 	../src/gtpsa/mad-ng/src/mad_desc.h
 
 	../src/gtpsa/mad-ng/src/mad_desc.c
+
+		| int mad_desc_getnv (const D *d, ord_t *mo_, int *np_, ord_t *po_)
+		| ord_t mad_desc_maxord (const D *d, int n, ord_t no_[n])
+		| ord_t mad_desc_gtrunc(const desc_t *d, ord_t to)
+		| void mad_desc_info (const D *d, FILE *fp_)
 
 TPSA vector operations:
 
