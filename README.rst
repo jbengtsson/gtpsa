@@ -286,7 +286,8 @@ The general *gtpsa* C++ <- C interface is in:
 		| ss_vect_n_dim
 		| ss_vect
 		| state_space
-		| show(std::ostream &strm, int level = 1, bool with_endl = true) (For TPSA map)
+		| # For TPSA map: only prints leading order - *level* parameter not implemented.
+		| show(std::ostream &strm, int level = 1, bool with_endl = true)
 
 		| jacobian
 		| hessian
