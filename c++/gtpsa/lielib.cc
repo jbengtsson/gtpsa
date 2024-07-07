@@ -751,7 +751,7 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::h_DF_to_M
 }
 
 
-Eigen::MatrixXd get_lin_map(gtpsa::ss_vect<gtpsa::tpsa> &map)
+Eigen::MatrixXd get_lin_map(const gtpsa::ss_vect<gtpsa::tpsa> &map)
 {
   const int ps_dim = 6;
 
@@ -759,7 +759,8 @@ Eigen::MatrixXd get_lin_map(gtpsa::ss_vect<gtpsa::tpsa> &map)
 
   for (auto j = 0; j < ps_dim; j++) {
     for (auto k = 0; k < ps_dim; k++)
-      M(j, k) = map[j].get(k);
+      // Constant term has index 0.
+      M(j, k) = map[j].get(1+k);
   }
   return M;
 }
@@ -867,31 +868,31 @@ Eigen::VectorXd compute_dispersion(const Eigen::MatrixXd &M)
 }
 
 
-Eigen::MatrixXd compute_A0(const Eigen::MatrixXd &M)
+Eigen::MatrixXd compute_A_0(const Eigen::MatrixXd &M)
 {
   const int
     n_dof = 2;
 
   Eigen::MatrixXd
-    A0 = Eigen::MatrixXd::Identity(6, 6);
+    A_0 = Eigen::MatrixXd::Identity(6, 6);
 
   auto eta = compute_dispersion(M);
 
   if (n_dof == 2) {
     // Coasting beam - translate to momentum dependent fix point.
     for (auto k = 0; k < n_dof; k++) {
-      A0(2*k, delta_)   =  eta(2*k);
-      A0(2*k+1, delta_) =  eta(2*k+1);
-      A0(ct_, 2*k)      =  eta(2*k+1);
-      A0(ct_, 2*k+1)    = -eta(2*k);
+      A_0(2*k, delta_)   =  eta(2*k);
+      A_0(2*k+1, delta_) =  eta(2*k+1);
+      A_0(ct_, 2*k)      =  eta(2*k+1);
+      A_0(ct_, 2*k+1)    = -eta(2*k);
     }
   }
 
-  return A0;
+  return A_0;
 }
 
 
-Eigen::MatrixXd compute_A1(const int n_dof, Eigen::MatrixXcd &u_ord)
+Eigen::MatrixXd compute_A_1(const int n_dof, Eigen::MatrixXcd &u_ord)
 {
   const int
     n_dim = 2*n_dof;
@@ -899,7 +900,7 @@ Eigen::MatrixXd compute_A1(const int n_dof, Eigen::MatrixXcd &u_ord)
     I = std::complex<double>(0e0, 1e0);
 
   Eigen::MatrixXd
-    A1 = Eigen::MatrixXd::Identity(6, 6);
+    A_1 = Eigen::MatrixXd::Identity(6, 6);
   Eigen::MatrixXcd
     u(n_dim, n_dim);
 
@@ -920,15 +921,15 @@ Eigen::MatrixXd compute_A1(const int n_dof, Eigen::MatrixXcd &u_ord)
   u_ord = u;
 
   for (auto k = 0; k < n_dof; k++) {
-    A1.block(0, 0, n_dim, n_dim).col(2*k)   = u.col(2*k).real();
-    A1.block(0, 0, n_dim, n_dim).col(2*k+1) = u.col(2*k).imag();
+    A_1.block(0, 0, n_dim, n_dim).col(2*k)   = u.col(2*k).real();
+    A_1.block(0, 0, n_dim, n_dim).col(2*k+1) = u.col(2*k).imag();
   }
 
-  return A1;
+  return A_1;
 }
 
 
-void compute_M_diag(const std::shared_ptr<gtpsa::mad::desc> &desc, MNFType &MNF)
+const Eigen::MatrixXd compute_M_diag(const Eigen::MatrixXd &M)
 {
   const int
     n_dof = 2,
@@ -943,22 +944,20 @@ void compute_M_diag(const std::shared_ptr<gtpsa::mad::desc> &desc, MNFType &MNF)
     u(n_dim, n_dim),
     u_ord(n_dim, n_dim);
 
-  auto M = get_lin_map(MNF.M);
-
   // Check if stable.
   auto Tr_x = M.block(0, 0, n_dof, n_dof).trace();
   if (fabs(Tr_x) >= 2e0) {
     std::cout << std::scientific << std::setprecision(5)
 	      << "\nEigenvalues - unstable in the horizontal plane:"
 	      << " Tr{M_x} = " << Tr_x << "\n";
-    return;
+    assert(false);
   }
   auto Tr_y = M.block(n_dof, n_dof, n_dof, n_dof).trace();
   if (fabs(Tr_y) >= 2e0) {
     std::cout << std::scientific << std::setprecision(5)
 	      << "\nEigenvalues - unstable in the vertical plane:"
 	      << " Tr{M_y} = " << Tr_y << "\n";
-    return;
+    assert(false);
   }
 
   auto M_4x4 = M.block(0, 0, n_dim, n_dim);
@@ -979,18 +978,9 @@ void compute_M_diag(const std::shared_ptr<gtpsa::mad::desc> &desc, MNFType &MNF)
       acos2(w_ord(k).imag(), w_ord(k).real())/(2e0*M_PI);
   }
 
-  auto A1_mat = compute_A1(n_dof, u_ord);
-  auto A0_mat = compute_A0(M);
-  auto R_mat  = (A0_mat*A1_mat).inverse()*M*A0_mat*A1_mat;
+  auto A_1 = compute_A_1(n_dof, u_ord);
 
-  MNF.A0 = mat2map(desc, A0_mat);
-  MNF.A1 = mat2map(desc, A1_mat);
-  MNF.R  = mat2map(desc, R_mat);
-
-  print_map("\nA0:\n",    MNF.A0);
-  print_map("\nA1:\n",    MNF.A1);
-  print_map("\nA0*A1:\n", gtpsa::compose(MNF.A0, MNF.A1));
-  print_map("\nR:\n",     MNF.R);
+  return A_1;
 }
 
 
@@ -1115,7 +1105,7 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   const auto no   = desc->maxOrd();
 
   auto Id = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto A0 = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+  auto A_0 = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto x  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto v  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto w  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
@@ -1128,34 +1118,34 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   x[delta_] = Id[delta_];
   v = gtpsa::compose(gtpsa::minv(v), x);
   v[delta_] = v[ct_] = 0e0;
-  A0 = Id + v;
+  A_0 = Id + v;
 
   // Corrections.
   v.set_zero();
   x.set_zero();
   w.set_zero();
   for (int k = 0; k < 2*n_dof; k++)
-    A0[k] -= Id[k];
+    A_0[k] -= Id[k];
   for (int k = 0; k < 2*n_dof; k++)
-    w[k] = gtpsa::deriv(A0[k], delta_+1);
+    w[k] = gtpsa::deriv(A_0[k], delta_+1);
   for (int k = 0; k < n_dof; k++) {
     v[2*k+1] = w[2*k];
     v[2*k] = -w[2*k+1];
   }
   for (int k = 0; k < 2*n_dof; k++) {
     w[ct_] = v[k]*Id[k] + w[ct_];
-    w[k] = A0[k];
+    w[k] = A_0[k];
   }
   w[ct_] = std::pow(-1, ct_)*w[ct_];
 
-  // A0 = exp_v_to_M(w, Id, 1e-7, 10000);
-  A0 = exp_v_to_M(w, Id);
+  // A_0 = exp_v_to_M(w, Id, 1e-7, 10000);
+  A_0 = exp_v_to_M(w, Id);
 
-  return A0;
+  return A_0;
 }
 
 
-MNFType gtpsa::map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+void gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
   const auto desc = M[0].getDescription();
   const auto no   = desc->maxOrd();
@@ -1182,30 +1172,43 @@ MNFType gtpsa::map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
   Id.set_identity();
 
-  // danot_(no-1);
+  MNF.M = M.clone();
 
-  map1 = M.clone();
+  // Compute fixed point.
+  MNF.A_0 = gtpsa::GoFix(MNF.M);
 
-  // danot_(no);
-
-  // Find fixed point.
-   MNF.A0 = gtpsa::GoFix(map1);
+  printf("\nA_0:");
+  MNF.A_0.show(std::cout, 1);
 
   // Translate to fix point.
-  map1 = gtpsa::compose(MNF.A0_inv, gtpsa::compose(map1, MNF.A0));
+  M_Fl = gtpsa::compose(gtpsa::minv(MNF.A_0), gtpsa::compose(MNF.M, MNF.A_0));
 
-  print_map("\nA0:", MNF.A0);
-  print_map("\nM_map:", map1);
+  printf("\nM_Fl:");
+  M_Fl.show(std::cout, 1);
+ 
+  MNF.A_1 = mat2map(desc, compute_M_diag(get_lin_map(M_Fl)));
+  // Contstant term has index 0.
+  MNF.A_1[6].setVariable(0e0, 7, 0e0);
 
-  map1._copyInPlace(MNF.M);
-  compute_M_diag(desc, MNF);
+  printf("\nA_1:");
+  MNF.A_1.show(std::cout, 1);
 
   M_Fl =
     gtpsa::compose
-    (gtpsa::minv(gtpsa::compose(MNF.A0, MNF.A1)),
-     gtpsa::compose(MNF.M, gtpsa::compose(MNF.A0, MNF.A1)));
+    (gtpsa::minv(gtpsa::compose(MNF.A_0, MNF.A_1)),
+     gtpsa::compose(MNF.M, gtpsa::compose(MNF.A_0, MNF.A_1)));
 
-  print_map("\nM_Fl:\n", M_Fl);
+  MNF.R = mat2map(desc, get_lin_map(M_Fl));
+  // Contstant term has index 0.
+  MNF.R[6].setVariable(0e0, 7, 0e0);
+
+  printf("\nR:");
+  MNF.R.show(std::cout, 1);
+  printf("\nM_Fl:");
+  M_Fl.show(std::cout, 1);
+
+  std::cout << "\nSo far, so good!\n";
+  return;
 
   MNF.K = 0e0;
   for (auto k = 0; k < 2; k++) {
@@ -1218,6 +1221,9 @@ MNFType gtpsa::map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   std::cout << std::fixed << std::setprecision(5)
        << "nu0 = (" << nu0[X_] << ", " << nu0[Y_] << ")" << "\n";
 
+  map1._copyInPlace(MNF.M);
+  map1 = M.clone();
+
   // Coasting beam.
   auto ind = std::vector<ord_t>{0, 0, 0, 0, 1, 0, 0};
   MNF.K.set(ind, 1e0, map1[ct_].get(ind)/2e0);
@@ -1229,7 +1235,7 @@ MNFType gtpsa::map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
     map2 =
       gtpsa::compose
       (map1, gtpsa::minv
-       (gtpsa::compose(M_Fl, h_DF_to_M(MNF.K, Id, 3, k-1))));
+       (gtpsa::compose(MNF.R, h_DF_to_M(MNF.K, Id, 3, k-1))));
     hn = M_to_h(get_mns(map2, k-1, k-1));
     gn = get_g(nu0[X_], nu0[Y_], hn);
     MNF.g += gn;
@@ -1241,5 +1247,5 @@ MNFType gtpsa::map_norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
     map1 = gtpsa::compose(gtpsa::minv(A), gtpsa::compose(map1, A));
   }
 
-  return MNF;
+  // return MNF;
 }

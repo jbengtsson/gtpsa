@@ -10,21 +10,18 @@ class MNFType
 private:
 public:
   gtpsa::tpsa
-    K,              // Lie generator in Floquet space.
-    g;              /* Lie generator for canonical transformation to Floquet
-		       space. */
+    K,     // Lie generator in Floquet space.
+    g;     // Lie generator for canonical transformation to Floquet space.
   gtpsa::ss_vect<gtpsa::tpsa>
-    M,              // Poincaré map.
-    M_res,          // Residual map.
-    A0, A0_inv,     // Linear transformation to fixed point.
-    A1, A1_inv,     // Linear transformation to Floquet space.
-    A_nl, A_nl_inv, // Nonlinear transformation to Floquet space.
-    R;              // Map in Floquet space.
+    M,     // Poincaré map.
+    A_0,   // Linear transformation to fixed point.
+    A_1,   // Linear transformation to Floquet space.
+    A_nl,  // Nonlinear transformation to Floquet space.
+    R;     // Map in Floquet space.
 
   MNFType(const std::shared_ptr<gtpsa::mad::desc> &desc, const int no):
-    K(desc, no), g(desc, no), M(desc, no-1), M_res(desc, no-1), A0(desc, 1),
-    A0_inv(desc, 1), A1(desc, 1), A1_inv(desc, 1), A_nl(desc, no-1),
-    A_nl_inv(desc, no-1), R(desc, 1)
+    K(desc, no), g(desc, no), M(desc, no-1), A_0(desc, 1), A_1(desc, 1),
+    A_nl(desc, no-1), R(desc, 1)
   { }
 
 };
@@ -56,7 +53,7 @@ namespace gtpsa {
   void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
   tpsa RtoC(const tpsa &a_re, const tpsa &a_im);
   ss_vect<tpsa> GoFix(const ss_vect<tpsa> &map);
-  MNFType map_norm(const ss_vect<tpsa> &M);
+  void Map_Norm(const ss_vect<tpsa> &M);
 
 } // namespace gtpsa
 
