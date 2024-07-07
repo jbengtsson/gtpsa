@@ -55,10 +55,10 @@ However, some of the key *gtpsa* map analysis functions are implemented in the *
 
 Hence, they have been re-implemented in C++.
 
-	num_t double
-	ord_t unsigned char
-	idx_t int32_t
-	ssz_t int32_t
+	| num_t double
+	| ord_t unsigned char
+	| idx_t int32_t
+	| ssz_t int32_t
 
 
 C++ -> Python Pybind11 Part
@@ -67,10 +67,10 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 
 	../python/src/thor_scsi.cc
 
-		inv
-		pinv
-		compose
-		M_to_h_DF
+		| inv
+		| pinv
+		| compose
+		| M_to_h_DF
 
 	../src/gtpsa/python/src/gtpsa.cc
 
@@ -78,21 +78,21 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 
 	TPSA map operations:
 
-		minv
-		pminv
-		compose (redundant)
-		...
+		| minv
+		| pminv
+		| compose (redundant)
+		| ...
 
 	../src/gtpsa/python/src/gtpsa.cc
 
-		print
-		(Sets *eps* 1e-30 vs. 0 for the *gtpsa* print function to supress printing of zeroes)
-		length
-		getDescription
-		get
-		set
-		getv
-		setv
+		| print
+		| (Sets *eps* 1e-30 vs. 0 for the *gtpsa* print function to supress printing of zeroes)
+		| length
+		| getDescription
+		| get
+		| set
+		| getv
+		| setv
 
 		...
 
@@ -100,162 +100,162 @@ The *gtpsa* C++ <- C functions are in:
 
 	../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
 
-		# Parameters: (constant part, monomial index, value).
-		setVariable(const base_type v, const idx_t iv = 0, const base_type scale = 0).
+		| # Parameters: (constant part, monomial index, value).
+		| setVariable(const base_type v, const idx_t iv = 0, const base_type scale = 0).
 
-		# Return order & exponents for monomial with index i.
-		mono(idx_t i, std::vector<ord_t> \*m)
+		| # Return order & exponents for monomial with index i.
+		| mono(idx_t i, std::vector<ord_t> \*m)
 		
-		# Return index for monomial m.
-		#   use string for the exponents:
-		index(std::string s)
-		#   use arrau fpr the exponents:
-		index(const std::vector<ord_t> &m)
-		#   sparse monomials [(i, o)]:
-		indexsm(const std::vector<int> m)
+		| # Return index for monomial m.
+		| #   use string for the exponents:
+		| index(std::string s)
+		| #   use arrau fpr the exponents:
+		| index(const std::vector<ord_t> &m)
+		| #   sparse monomials [(i, o)]:
+		| indexsm(const std::vector<int> m)
 		
-		# Return a pair (.first, .second) for ???
-		cycle(const idx_t i, std::vector<ord_t> \*m)
+		| # Return a pair (.first, .second) for ???
+		| cycle(const idx_t i, std::vector<ord_t> \*m)
 
-		cst()
+		| cst()
 
-		# Get constant term.
-		get(void)                           get()
+		| # Get constant term.
+		| get(void)                           get()
 
-		# Get mon
-		get(const idx_t i)                  get(46)
-		get(const std::string s)            get()
-		get(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
-		getsm(const std::vector<int> &m)
+		| # Get mon
+		| get(const idx_t i)                  get(46)
+		| get(const std::string s)            get()
+		| get(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
+		| getsm(const std::vector<int> &m)
 
-		set(void)
-		...
+		| set(void)
+		| ...
 
-		# The 1st parameter is offset - 1 to skip constant part: 0..
-		getv(idx_t i, std::vector<base_type> *v)
-		setv(idx_t i, const std::vector<base_type> &v)
+		| # The 1st parameter is offset - 1 to skip constant part: 0..
+		| getv(idx_t i, std::vector<base_type> *v)
+		| setv(idx_t i, const std::vector<base_type> &v)
 
-		rgetorder
-		print
-		cst
-		pow
-		add
-		dif
-		sub
-		mul
-		div
-		acc
-		scl
-		inv
-		invsqrt
-		rderiv
-		rinteg
-		...
+		| rgetorder
+		| print
+		| cst
+		| pow
+		| add
+		| dif
+		| sub
+		| mul
+		| div
+		| acc
+		| scl
+		| inv
+		| invsqrt
+		| rderiv
+		| rinteg
+		| ...
 
 	../src/gtpsa/c++/gtpsa/mad/wrapper.tpp
 
-		print()
-		print("", 1e-30, 0, stdout) (For TPSA vector; use cout << for map)
+		| print()
+		| print("", 1e-30, 0, stdout) (For TPSA vector; use cout << for map)
 
-		rgetOrder
+		| rgetOrder
 
-		setvar(const GTPSA_BASE_T v, const idx_t iv = 0, const GTPSA_BASE_T scl = 0)
-		mono(const idx_t i, std::vector<ord_t> \*m)
-		idxs(const std::string s)
-		idxm(const std::vector<ord_t> &m)
-		idxsm(const std::vector<int> m)
-		cycle(const idx_t i, std::vector<ord_t> \*m, GTPSA_BASE_T \*v)
+		| setvar(const GTPSA_BASE_T v, const idx_t iv = 0, const GTPSA_BASE_T scl = 0)
+		| mono(const idx_t i, std::vector<ord_t> \*m)
+		| idxs(const std::string s)
+		| idxm(const std::vector<ord_t> &m)
+		| idxsm(const std::vector<int> m)
+		| cycle(const idx_t i, std::vector<ord_t> \*m, GTPSA_BASE_T \*v)
 
-		get0(void)                           get()
-		geti(const idx_t i)                  get(46)
-		gets(const std::string s)            get()
-		getm(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
-		getsm(const std::vector<int> &m)
+		| get0(void)                           get()
+		| geti(const idx_t i)                  get(46)
+		| gets(const std::string s)            get()
+		| getm(const std::vector<ord_t> &m)    get(std::vector<ord_t>{2, 0, 0, 0, 0, 0, 0})
+		| getsm(const std::vector<int> &m)
 
-		# The 1st parameter is offset - 1 to skip constant part: 0..
-		getv(const idx_t i, std::vector<GTPSA_BASE_T> \*v)
-		setv(const idx_t i, const std::vector<GTPSA_BASE_T> &v)
+		| # The 1st parameter is offset - 1 to skip constant part: 0..
+		| getv(const idx_t i, std::vector<GTPSA_BASE_T> \*v)
+		| setv(const idx_t i, const std::vector<GTPSA_BASE_T> &v)
 
-		a*x[0]+b
-		set0(const num_t a, const num_t b)
+		| a*x[0]+b
+		| set0(const num_t a, const num_t b)
 
-		a*x[i]+b
-		seti(const idx_t i, const num_t a, const num_t b)
+		| a*x[i]+b
+		| seti(const idx_t i, const num_t a, const num_t b)
 
-		a*x[m]+b
-		sets(const std::string &s, const num_t a, const num_t b)
+		| a*x[m]+b
+		| sets(const std::string &s, const num_t a, const num_t b)
 
-		a*x[m]+b
-		setm(const std::vector<ord_t> &m, const num_t a, const num_t b)
+		| a*x[m]+b
+		| setm(const std::vector<ord_t> &m, const num_t a, const num_t b)
 
-		rderiv
-		rinteg
+		| rderiv
+		| rinteg
 
 	../src/gtpsa/c++/gtpsa/mad/tpsa_wrapper.hpp
 	Wrapper for C++ <- C.
 
-		norm
-		equ
+		| norm
+		| equ
 
 	../src/gtpsa/c++/gtpsa/bridge/container.hpp
 
-		size
-		getMaximumOrder
-		computeNorm
-		rvec2fld
+		| size
+		| getMaximumOrder
+		| computeNorm
+		| rvec2fld
 
-		...
+		| ...
 
 	../src/gtpsa/c++/gtpsa/mad/container_wrapper.tpp
 
-		size
-		getMaximumOrder
-		computeNorm
-		rvec2fld
-		fld2vec
-		fgrad
-		rliebra
-		rexppb
-		rlogpb
-		rcompose (which call compose in the gtpsa library)
-		rminv
-		rpminv
+		| size
+		| getMaximumOrder
+		| computeNorm
+		| rvec2fld
+		| fld2vec
+		| fgrad
+		| rliebra
+		| rexppb
+		| rlogpb
+		| rcompose (which call compose in the gtpsa library)
+		| rminv
+		| rpminv
 
 	../src/gtpsa/c++/gtpsa/intern/with_operators.hpp
 
-		show()
-		show(stdout, level) (For TPSA vector)
-		operator<<
+		| show()
+		| show(stdout, level) (For TPSA vector)
+		| operator<<
 
-		Remark: It only prints leading order; *level* parameter not implemented.
+		| Remark: It only prints leading order; *level* parameter not implemented.
 
 The *gtpsa* print functions are in:
 
 	../src/gtpsa/mad-ng/src/mad_tpsa.c
 	
-		mad_tpsa_setvar(tpsa_t \*t, num_t v, idx_t iv, num_t scl)
+		| mad_tpsa_setvar(tpsa_t \*t, num_t v, idx_t iv, num_t scl)
 
-		mad_tpsa_mono(const tpsa_t \*t, idx_t i,  ssz_t n, ord_t m[])
-		mad_tpsa_idxs(const tpsa_t \*t, ssz_t n, str_t s)
-		mad_tpsa_idxm(const tpsa_t \*t, ssz_t n, const ord_t m[])
-		mad_tpsa_idxsm(const tpsa_t \*t, ssz_t n, const int m[])
-		mad_tpsa_cycle(const tpsa_t \*t, idx_t i, ssz_t n, ord_t m[], num_t \*v)
+		| mad_tpsa_mono(const tpsa_t \*t, idx_t i,  ssz_t n, ord_t m[])
+		| mad_tpsa_idxs(const tpsa_t \*t, ssz_t n, str_t s)
+		| mad_tpsa_idxm(const tpsa_t \*t, ssz_t n, const ord_t m[])
+		| mad_tpsa_idxsm(const tpsa_t \*t, ssz_t n, const int m[])
+		| mad_tpsa_cycle(const tpsa_t \*t, idx_t i, ssz_t n, ord_t m[], num_t \*v)
 
-		mad_tpsa_get0(const tpsa_t \*t)
-		mad_tpsa_geti(const tpsa_t \*t, idx_t i)
-		mad_tpsa_gets(const tpsa_t \*t, ssz_t n, str_t s)
-		mad_tpsa_getm(const tpsa_t \*t, ssz_t n, const ord_t m[])
-		mad_tpsa_getsm(const tpsa_t \*t, ssz_t n, const int m[])
+		| mad_tpsa_get0(const tpsa_t \*t)
+		| mad_tpsa_geti(const tpsa_t \*t, idx_t i)
+		| mad_tpsa_gets(const tpsa_t \*t, ssz_t n, str_t s)
+		| mad_tpsa_getm(const tpsa_t \*t, ssz_t n, const ord_t m[])
+		| mad_tpsa_getsm(const tpsa_t \*t, ssz_t n, const int m[])
 
-		# The 2nd parameter is offset - 1 to skip constant part: 0..
-		mad_tpsa_getv(const tpsa_t \*t, idx_t i, ssz_t n, num_t v[])
+		| # The 2nd parameter is offset - 1 to skip constant part: 0..
+		| mad_tpsa_getv(const tpsa_t \*t, idx_t i, ssz_t n, num_t v[])
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_io.c
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_comp.c
 
-		print
-		print_damap
+		| print
+		| print_damap
 
 *Gtpsa* C++ <- C Interface
 --------------------------
@@ -265,44 +265,44 @@ The general *gtpsa* C++ <- C interface is in:
 
 	../src/gtpsa/c++/gtpsa/desc.cc
 
-		show
-		getDescription
-		getinfo
-		getNumberOfVariables
-		getVariablesMaximumOrder
-		getNumberOfParameters
-		getParametersMaximumOrder
-		getTotalNumber
-		getOrderPerParameter
-		getNv(ord_t \*mo_=0, int \*np_=0, ord_t \*po_=0)
-		maxOrd(int nn=0, ord_t \*no=nullptr)
-		maxLen(ord_t mo)
-		trunc(const ord_t to) (From mad_desc_gtrunc)
+		| show
+		| getDescription
+		| getinfo
+		| getNumberOfVariables
+		| getVariablesMaximumOrder
+		| getNumberOfParameters
+		| getParametersMaximumOrder
+		| getTotalNumber
+		| getOrderPerParameter
+		| getNv(ord_t \*mo_=0, int \*np_=0, ord_t \*po_=0)
+		| maxOrd(int nn=0, ord_t \*no=nullptr)
+		| maxLen(ord_t mo)
+		| trunc(const ord_t to) (From mad_desc_gtrunc)
 
 	../src/gtpsa/c++/gtpsa/ss_vect.h
 
 	../src/gtpsa/c++/gtpsa/ss_vect.cc
 
-		ss_vect_n_dim
-		ss_vect
-		state_space
-		show(std::ostream &strm, int level = 1, bool with_endl = true) (For TPSA map)
+		| ss_vect_n_dim
+		| ss_vect
+		| state_space
+		| show(std::ostream &strm, int level = 1, bool with_endl = true) (For TPSA map)
 
-		jacobian
-		hessian
-		set_zero
-		set_identity
-		setConstant
-		setJacobian
-		setHessian
-		rcompose
+		| jacobian
+		| hessian
+		| set_zero
+		| set_identity
+		| setConstant
+		| setJacobian
+		| setHessian
+		| rcompose
 
 	../src/gtpsa/c++/gtpsa/funcs.h
 
-		sqrt
-		exp
-		log
-		...
+		| sqrt
+		| exp
+		| log
+		| ...
 
 
 Not yet implemented:
@@ -322,10 +322,10 @@ Not yet implemented:
 
 	../src/gtpsa/c++/gtpsa/lielib.cc
 
-		inv
-		pinv
-		compose
-		M_to_h_DF
+		| inv
+		| pinv
+		| compose
+		| M_to_h_DF
 
 TPSA descriptor operations:
 
@@ -339,65 +339,65 @@ TPSA vector operations:
 
 	../src/gtpsa/mad-ng/src/mad_tpsa_ops.c
 
-		add
-		sub
-		...
-		integ
-		deriv
-		poisbra
-		...
-		print
-		...
-		cutord
+		| add
+		| sub
+		| ...
+		| integ
+		| deriv
+		| poisbra
+		| ...
+		| print
+		| ...
+		| cutord
 
 TPSA map operations:
 
 	../src/gtpsa/mad-ng/src/mad_tpsa_comp.c
 
-		Local
+		| Local
 
-		print_damap
+		| print_damap
 
-		Public
+		| Public
 
-		compose
-		translate
-		eval
+		| compose
+		| translate
+		| eval
 
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_comp_s.tc
 
-		compose
+		| compose
 
 	../src/gtpsa/mad-ng/src]/mad_tpsa_minv.c
 
-		minv
+		| minv
 
-		pinv
+		| pinv
 
 	../src/gtpsa/mad-ng/src/mad_tpsa_mops.c
 
-		Local
+		| Local
 
-		print_damap
+		| print_damap
 
-		Public
+		| Public
 
-		exppb
-		logpb
-		liebra
-		fgrad
+		| exppb
+		| logpb
+		| liebra
+		| fgrad
 
-		Compute (Eq. (34)):
-			G(x;0) = -J grad.f(x;0)
+		| Compute (Eq. (34)):
+			| G(x;0) = -J grad.f(x;0)
 
-		vec2fld
+		| vec2fld
 
-		Compute(Eqs. (34)-(37)):
-			f(x;0) = \int_0^x J G(x';0) dx' = x^t J phi G(x;0)
+		| Compute(Eqs. (34)-(37)):
+			| f(x;0) = \int_0^x J G(x';0) dx' = x^t J phi G(x;0)
 
-		fld2vec
-		mnrm (norm)
+		| fld2vec
+		| mnrm (norm)
 
 Also, a few are in:
 
@@ -405,25 +405,25 @@ Also, a few are in:
 
 	../src/gtpsa/mad-ng/src/madl_damap.mad
 
-		map_ctor
-		factor_map
+		| map_ctor
+		| factor_map
 
-		Factored Lie of exponential and poisson bracket:
+		| Factored Lie of exponential and poisson bracket:
 
-			r = exp(:y1:) exp(:y2:)... x
+			| r = exp(:y1:) exp(:y2:)... x
 
-		lieexppb
-		flofacg
-		...
+		| lieexppb
+		| flofacg
+		| ...
 
 	../src/gtpsa/madl_gphys.mad
 
-		make_symp (Make map symplectic, thesis by Liam Healy)
+		| make_symp (Make map symplectic, thesis by Liam Healy)
 
-			L\. Healy *Lie-Algebraic Methods for Treating Lattice Parameter Errors in Particle Accelerators* Thesis, Univ. of Maryland, 1986.
+			| L\. Healy *Lie-Algebraic Methods for Treating Lattice Parameter Errors in Particle Accelerators* Thesis, Univ. of Maryland, 1986.
 
-		gphys.normal_ng (Map normal form)
-		normal_c        (Phasor basis)
+		| gphys.normal_ng (Map normal form)
+		| normal_c        (Phasor basis)
 
 *Lua* Scripting Language
 ----------------------
