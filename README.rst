@@ -224,10 +224,10 @@ The *gtpsa* C++ <- C functions are in:
 	../src/gtpsa/c++/gtpsa/intern/with_operators.hpp
 
 		| show()
-		| show(stdout, level) (For TPSA vector)
+		| # For TPSA vector: only prints leading order - *level* parameter not implemented.
+		| show(stdout, level)
 		| operator<<
 
-		| Remark: It only prints leading order; *level* parameter not implemented.
 
 The *gtpsa* print functions are in:
 
