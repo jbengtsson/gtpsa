@@ -32,7 +32,7 @@ References:
 
 	https://accelconf.web.cern.ch/ipac2015/papers/mopje039.pdf
 
-Turned out that the gtpsa map concatenator can not handle parameter dependence; so it had to be reimplemented.
+Turned out that the CEERN gtpsa map concatenator can not handle parameter dependence; so it had to be reimplemented.
 
 The C++ <- C gtpsa bridge interface is in:
 
@@ -55,6 +55,9 @@ However, some of the key *gtpsa* map analysis functions are implemented in the *
 
 Hence, they have been re-implemented in C++.
 
+Data Types
+----------
+
 	| num_t double
 	| ord_t unsigned char
 	| idx_t int32_t
@@ -65,13 +68,22 @@ C++ -> Python Pybind11 Part
 ---------------------------
 The *gtpsa* Python Pybind11 <- C++ part is in:
 
+Python interface:
+
 	../python/src/thor_scsi.cc
 
 		| inv
 		| pinv
-		| compose
+		| (compose)
 		| M_to_h_DF
+		| CtoR
+		| RtoC
+		| GoFix
+		| Map_Norm
 
+and the implementation:
+
+	../src/gtpsa/c++/gtpsa/lielib.cc
 
 	../src/gtpsa/python/src/ss_vect.h
 
