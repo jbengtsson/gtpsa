@@ -292,12 +292,15 @@ The general *gtpsa* C++ <- C interface is in:
 		| # Prints out info, e.g.:
 		| #   id=2, nn=7, nv=7, np=0, mo=5, po=0, to=5, uno=0, no=[5555555]
 		| info(FILE * fp = nullptr)
-		| # Get all the info.
-		| getInfo()
-		| getDescription()
-		|   getNv
-		|   maxOrd
-		|   maxLen
+		| 
+		| getDescription()->
+		|    # Get all the info:
+		|    getInfo
+		|    #  e.g.:
+		|    cout << a.getDescription()->getInfo
+		|    getNv
+		|    maxOrd
+		|    maxLen
 		|
 		| getNumberOfVariables
 		| getVariablesMaximumOrder
