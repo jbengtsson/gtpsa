@@ -365,10 +365,10 @@ TPSA descriptor operations:
 
 	../src/gtpsa/mad-ng/src/mad_desc.c
 
-		| int mad_desc_getnv (const D *d, ord_t *mo_, int *np_, ord_t *po_)
-		| ord_t mad_desc_maxord (const D *d, int n, ord_t no_[n])
-		| ord_t mad_desc_gtrunc(const desc_t *d, ord_t to)
-		| void mad_desc_info (const D *d, FILE *fp_)
+		| int mad_desc_getnv (const D \*d, ord_t \*mo_, int \*np_, ord_t \*po_)
+		| ord_t mad_desc_maxord (const D \*d, int n, ord_t no_[n])
+		| ord_t mad_desc_gtrunc(const desc_t \*d, ord_t to)
+		| void mad_desc_info (const D \*d, FILE \*fp_)
 
 TPSA vector operations:
 
