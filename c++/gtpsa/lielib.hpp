@@ -20,8 +20,8 @@ public:
     R;     // Map in Floquet space.
 
   MNFType(const std::shared_ptr<gtpsa::mad::desc> &desc, const int no):
-    K(desc, no), g(desc, no), M(desc, no-1), A_0(desc, 1), A_1(desc, 1),
-    A_nl(desc, no-1), R(desc, 1)
+    K(desc, no), g(desc, no), M(desc, no), A_0(desc, no), A_1(desc, no),
+    A_nl(desc, no), R(desc, no)
   { }
 
 };

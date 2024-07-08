@@ -57,7 +57,7 @@ gtpsa::ss_vect<gtpsa::tpsa> mat2map
 
 void print_map(const std::string &str, const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
-  const double eps = 1e-30;
+  const double eps = 1e-10;
 
   for (auto k = 0; k < M.size(); k++) 
     M[k].print(str.c_str(), eps, 0);
@@ -263,40 +263,28 @@ gtpsa::ss_vect<gtpsa::tpsa> get_M_k
 }
 
 
-/**
- *  Daflo in Forest's F77 LieLib.
- *    y = v * nabla * x
- */
 gtpsa::tpsa v_to_tps(const gtpsa::ss_vect<gtpsa::tpsa> &v, const gtpsa::tpsa &x)
 {
-  const int ps_dim = 6;
+  // Daflo in Forest's F77 LieLib.
+  //   y = v * nabla * x
+   const int ps_dim = 6;
 
   auto y = x.clone();
 
   y.clear();
   for (auto k = 0; k < ps_dim; k++)
+    // First index is 1.
     y += v[k]*deriv(x, k+1);
   return y;
 }
 
 
-/**
- * Expflo in Forest's F77 LieLib:
- *    y = exp(v*nabla) * x
- *
- * @param v
- * @param x
- * @param eps
- * @param n_max
- * @return
- *
- * todo:
- *    return a flag
- */
 gtpsa::tpsa exp_v_to_tps
 (const gtpsa::ss_vect<gtpsa::tpsa> &v, const gtpsa::tpsa &x, const double eps,
  const int n_max)
 {
+  // Expflo in Forest's F77 LieLib:
+  //   y = exp(v*nabla) * x
   double eps1;
   auto   y_k = x.clone();
   auto   y   = x.clone();
@@ -375,30 +363,25 @@ gtpsa::ss_vect<gtpsa::tpsa> exp_v_fac_to_M
 }
 
 
-/**
- * @brief Factor map:
- *
- * Flofac in Forest's F77 LieLib.
- * Factor map:
- *   M = M_2 ... * M_n
-  */
 static gtpsa::ss_vect<gtpsa::tpsa>
-M_to_M_fact(const gtpsa::ss_vect<gtpsa::tpsa> &t_map)
+M_to_M_fact(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
+  // Flofac in Forest's F77 LieLib.
+  //   M = M_2 ... * M_n
   const int
     ps_dim = 6,
-    no     = t_map.getMaximumOrder();
+    no     = M.getMaximumOrder();
 
-  auto map_lin     = t_map.allocateLikeMe();
-  auto map_lin_inv = t_map.allocateLikeMe();
-  auto map_fact    = t_map.allocateLikeMe();
-  auto map_k       = t_map.allocateLikeMe();
+  auto map_lin     = M.allocateLikeMe();
+  auto map_lin_inv = M.allocateLikeMe();
+  auto map_fact    = M.allocateLikeMe();
+  auto map_k       = M.allocateLikeMe();
 
-  map_lin.rgetOrder(t_map, 1);
+  map_lin.rgetOrder(M, 1);
   map_lin_inv = gtpsa::minv(map_lin);
   // map_lin_inv[ps_dim].setVariable(0e0);
   
-  auto map_res = gtpsa::compose(t_map, map_lin_inv);
+  auto map_res = gtpsa::compose(M, map_lin_inv);
 
   map_fact.set_zero();
   for(int k = 2; k < no; ++k) {
@@ -450,20 +433,15 @@ void scl_mns(gtpsa::tpsa &mn)
 }
 
 
-/**
- * Intd in Forest's F77 LieLib.
- * E. Forest, M. Berz, J. Irwin 𝑁𝑜𝑟𝑚𝑎𝑙 𝐹𝑜𝑟𝑚 𝑀𝑒𝑡ℎ𝑜𝑑𝑠 𝑓𝑜𝑟 𝐶𝑜𝑚𝑝𝑙𝑖𝑐𝑎𝑡𝑒𝑑 𝑃𝑒𝑟𝑖𝑜𝑑𝑖𝑐 𝑆𝑦𝑠𝑡𝑒𝑚𝑠:
- * 𝐴 𝐶𝑜𝑚𝑝𝑙𝑒𝑡𝑒 𝑆𝑜𝑙𝑢𝑡𝑖𝑜𝑛 𝑈𝑠𝑖𝑛𝑔 𝐷𝑖𝑓𝑓𝑒𝑟𝑒𝑛𝑡𝑖𝑎𝑙 𝐴𝑙𝑔𝑒𝑏𝑟𝑎 𝑎𝑛𝑑 𝐿𝑖𝑒 𝑂𝑝𝑒𝑟𝑎𝑡𝑜𝑟𝑠 Part. Accel. 24,
- * 91-107 (1989):
- *   Eqs. (34)-(37).
- * Integrate monomials:
- *   M -> exp(:h:)
- *
- * @param t_map
- * @return
- */
 gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
+  // Intd in Forest's F77 LieLib.
+  // E. Forest, M. Berz, J. Irwin 𝑁𝑜𝑟𝑚𝑎𝑙 𝐹𝑜𝑟𝑚 𝑀𝑒𝑡ℎ𝑜𝑑𝑠 𝑓𝑜𝑟 𝐶𝑜𝑚𝑝𝑙𝑖𝑐𝑎𝑡𝑒𝑑 𝑃𝑒𝑟𝑖𝑜𝑑𝑖𝑐 𝑆𝑦𝑠𝑡𝑒𝑚𝑠:
+  // 𝐴 𝐶𝑜𝑚𝑝𝑙𝑒𝑡𝑒 𝑆𝑜𝑙𝑢𝑡𝑖𝑜𝑛 𝑈𝑠𝑖𝑛𝑔 𝐷𝑖𝑓𝑓𝑒𝑟𝑒𝑛𝑡𝑖𝑎𝑙 𝐴𝑙𝑔𝑒𝑏𝑟𝑎 𝑎𝑛𝑑 𝐿𝑖𝑒 𝑂𝑝𝑒𝑟𝑎𝑡𝑜𝑟𝑠 Part. Accel. 24,
+  // 91-107 (1989):
+  //   Eqs. (34)-(37).
+  // Integrate monomials:
+  //   M -> exp(:h:)
   const int ps_dim = 6;
 
   auto mn   = M[0].clone();
@@ -485,13 +463,14 @@ gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
 #else
 
-// The gtpsa function fld2vec doesn't work for parameter dependence.
-gtpsa::tpsa M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &t_map)
+// Remark: the fld2vecfunction in the CERN the gtpsa library doesn't work for
+// parameter dependence.
+gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
-  auto h = t_map[0].clone();
+  auto h = M[0].clone();
   h.clear();
   // In ../gtpsa/mad-ng/src/mad_tpsa_mops.c.
-  t_map.fld2vec(&h);
+  M.fld2vec(&h);
   return h;
 }
 
@@ -507,11 +486,12 @@ gtpsa::ss_vect<gtpsa::tpsa> h_to_v(const gtpsa::tpsa &h)
   const auto desc = h.getDescription();
   const auto no   = desc->maxOrd();
 
-  auto v  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+  auto v = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
 
   for (auto k = 0; k < n_dof; k++) {
-    v[2*k+1] = deriv(h, 2*k);
-    v[2*k] = -deriv(h, 2*k+1);
+    // First index is 1.
+    v[2*k+1] = deriv(h, 2*k+1);
+    v[2*k] = -deriv(h, 2*k+2);
   }
   return v;
 }
@@ -558,9 +538,8 @@ gtpsa::tpsa tps_compute_function
 {
   const auto desc = a.getDescription();
   const auto nv   = desc->getNv();
-  const auto no   = desc->maxOrd();
 
-  auto b = gtpsa::tpsa(desc, no);
+  auto b = a.clone();
 
   std::vector<num_t> v(a.length());
   std::vector<ord_t> ind(nv);
@@ -585,8 +564,8 @@ void gtpsa::CtoR(const gtpsa::tpsa &a, gtpsa::tpsa &a_re, gtpsa::tpsa &a_im)
   const auto desc = a.getDescription();
   const auto no   = desc->maxOrd();
 
-  auto b   = gtpsa::tpsa(desc, no);
-  auto c   = gtpsa::tpsa(desc, no);
+  auto b   = a.clone();
+  auto c   = a.clone();
 
   auto Id  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto map = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
@@ -635,7 +614,8 @@ gtpsa::tpsa gtpsa::RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
   const auto desc = a_re.getDescription();
   const auto no   = desc->maxOrd();
 
-  auto b   = gtpsa::tpsa(desc, no);
+  auto b   = a_re.clone();
+
   auto Id  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto map = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto tmp = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
@@ -697,8 +677,8 @@ void ss_vect_to_param
 gtpsa::tpsa gtpsa::M_to_h_DF(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
   // Liefact in Forest's F77 LieLib.
-  // A. Dragt, J. Finn "Lie Series and Invariant Functions for Analytic
-  // Symplectic maps" J. Math. Phys. 17, 2215-2227 (1976).
+  // A. Dragt, J. Finn 𝐿𝑖𝑒 𝑆𝑒𝑟𝑖𝑒𝑠 𝑎𝑛𝑑 𝐼𝑛𝑣𝑎𝑟𝑖𝑎𝑛𝑡 𝐹𝑢𝑛𝑐𝑡𝑖𝑜𝑛𝑠 𝑓𝑜𝑟 𝐴𝑛𝑎𝑙𝑦𝑡𝑖𝑐 𝑆𝑦𝑚𝑝𝑙𝑒𝑐𝑡𝑖𝑐 𝑀𝑎𝑝𝑠
+  // J. Math. Phys. 17, 2215-2227 (1976).
   // Dragt-Finn factorization:
   //   M ->  M_lin * exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:)
   //
@@ -732,6 +712,8 @@ gtpsa::tpsa gtpsa::M_to_h_DF(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 }
 
 
+#if 1
+
 gtpsa::ss_vect<gtpsa::tpsa> gtpsa::h_DF_to_M
 (const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
  const int k2)
@@ -739,16 +721,39 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::h_DF_to_M
   // Fexpo in Forest's F77 LieLib.
   // Compute map from Dragt-Finn factorisation:
   //   M = exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:) * X
-  const auto desc = h_DF.getDescription();
-  const auto no   = desc->maxOrd();
+  auto v_DF = x.clone();
+  auto M    = x.clone();
 
-  auto v_DF = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+  printf("\nh_DF_to_M: k1 = %d k2 = %d\n", k1-1, k2-1);
 
   v_DF = h_to_v(h_DF);
-  std::cout << v_DF;
-  assert(false);
-  return exp_v_fac_to_M(v_DF, x, k1, k2, 1e0);
+  M = exp_v_fac_to_M(v_DF, x, k1-1, k2-1, 1e0);
+  // Contstant term has index 0.
+  M[6].setVariable(0e0, 7, 0e0);
+  return M;
 }
+
+#else
+
+gtpsa::ss_vect<gtpsa::tpsa> h_DF_to_M
+(const gtpsa::tpsa &h, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
+ const int k2)
+{
+  // Fexpo in Forest's LieLib.
+  // Compute map from Dragt-Finn factorisation:
+  //   exp(:h_3:) exp(:h_4:) ... exp(:h_no:)
+  auto h_k = x[0].clone();
+  auto M   = x.clone();
+
+  M.set_identity();
+  for (auto k = k2; k >= k1; k--) {
+    h_k = get_h_k(h, k);
+    M = M*LieExp(h_k, x);
+  }
+  return M;
+}
+
+#endif
 
 
 Eigen::MatrixXd get_lin_map(const gtpsa::ss_vect<gtpsa::tpsa> &map)
@@ -840,7 +845,7 @@ Eigen::VectorXi sort_eigen_vec
 
 Eigen::MatrixXd compute_S(const int n_dof)
 {
-  // Remark: Beware of sign for longitudinal dim.
+  // Remark: Beware of sign for the longitudinal D.O.F.
   const int n_dim = 2*n_dof;
 
   Eigen::MatrixXd S = Eigen::MatrixXd::Zero(n_dim, n_dim);
@@ -984,8 +989,7 @@ const Eigen::MatrixXd compute_M_diag(const Eigen::MatrixXd &M)
 }
 
 
-gtpsa::tpsa get_g
-(const double nu_x, const double nu_y, const gtpsa::tpsa &h)
+gtpsa::tpsa get_g(const double nu_x, const double nu_y, const gtpsa::tpsa &h)
 {
   // Compute g = (1-R)^-1 * h
 
@@ -994,17 +998,16 @@ gtpsa::tpsa get_g
   const auto nv   = desc->getNv();
 
   std::vector<ord_t> jj1(nv), jj2(nv);
-  double             re, im;
+  double             re, im, cotan;
 
-  auto h_re  = gtpsa::tpsa(desc, no);
-  auto h_im  = gtpsa::tpsa(desc, no);
-  auto g_re  = gtpsa::tpsa(desc, no);
-  auto g_im  = gtpsa::tpsa(desc, no);
-  auto mn1   = gtpsa::tpsa(desc, no);
-  auto mn2   = gtpsa::tpsa(desc, no);
-  auto cotan = gtpsa::tpsa(desc, no);
+  auto h_re  = h.clone();
+  auto h_im  = h.clone();
+  auto g_re  = h.clone();
+  auto g_im  = h.clone();
+  auto mn1   = h.clone();
+  auto mn2   = h.clone();
 
-  auto Id    = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+  auto Id = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
 
   CtoR(h, h_re, h_im);
 
@@ -1013,7 +1016,8 @@ gtpsa::tpsa get_g
   }
 
   Id.set_identity();
-  g_re = g_im = 0e0;
+  g_re.clear();
+  g_im.clear();
   for (auto i = 0; i <= no; i++) {
     jj1[x_] = jj2[px_] = i;
     for (auto j = 0; j <= no; j++) {
@@ -1031,8 +1035,73 @@ gtpsa::tpsa get_g
 
 	    for (auto m = 0; m <= no-i-j-k-l; m++) {
 	      jj1[delta_] = jj2[delta_] = m;
-	      for (auto n = 0; n <= no-i-j-k-l; n++) {
-		jj1[nv-1] = jj2[nv-1] = n;
+	      re = h_re.get(jj1);
+	      im = h_im.get(jj1);
+	      // Compute g.
+	      g_re += (re-cotan*im)*(mn1+mn2)*pow(Id[delta_], m)/2e0;
+	      g_im += (im+cotan*re)*(mn1-mn2)*pow(Id[delta_], m)/2e0;
+	      h_re.set(jj2, 0e0, 0e0);
+	      h_im.set(jj2, 0e0, 0e0);
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  return RtoC(g_re, g_im);
+}
+
+
+gtpsa::tpsa get_g1
+(const double nu_x, const double nu_y, const gtpsa::tpsa &h)
+{
+  // Compute g = (1-R)^-1 * h
+
+  const auto desc = h.getDescription();
+  const auto no   = desc->maxOrd();
+  const auto nv   = desc->getNv();
+
+  std::vector<ord_t> jj1(nv), jj2(nv);
+  double             re, im, cotan;
+
+  auto h_re  = h.clone();
+  auto h_im  = h.clone();
+  auto g_re  = h.clone();
+  auto g_im  = h.clone();
+  auto mn1   = h.clone();
+  auto mn2   = h.clone();
+
+  auto Id = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+
+  CtoR(h, h_re, h_im);
+
+  for (auto k = 0; k < nv; k++) {
+    jj1[k] = jj2[k] = 0;
+  }
+
+  Id.set_identity();
+  g_re.clear();
+  g_im.clear();
+  for (auto i = 0; i <= no; i++) {
+    jj1[x_] = jj2[px_] = i;
+    for (auto j = 0; j <= no; j++) {
+      jj1[px_] = jj2[x_] = j;
+      for (auto k = 0; k <= no; k++) {
+	jj1[y_] = jj2[py_] = k;
+	for (auto l = 0; l <= no; l++) {
+	  jj1[py_] = jj2[y_] = l;
+	  if ((i+j+k+l <= no) && ((i-j != 0) || (k-l != 0))) {
+	    cotan = 1e0/tan(((i-j)*nu_x+(k-l)*nu_y)*M_PI);
+	    mn1 =
+	      pow(Id[x_], i)*pow(Id[px_], j)*pow(Id[y_], k)*pow(Id[py_], l);
+	    mn2 =
+	      pow(Id[x_], j)*pow(Id[px_], i)*pow(Id[y_], l)*pow(Id[py_], k);
+
+	    for (auto m = 0; m <= no-i-j-k-l; m++) {
+	      jj1[delta_] = jj2[delta_] = m;
+	      for (auto n = 0; n <= no-i-j-k-l-m; n++) {
+		jj1[ct_] = jj2[ct_] = n;
 		re = h_re.get(jj1);
 		im = h_im.get(jj1);
 		// Compute g.
@@ -1064,14 +1133,14 @@ gtpsa::tpsa get_Ker(const gtpsa::tpsa &h)
 
   std::vector<ord_t> ind(nv);
 
-  auto h_Ke = gtpsa::tpsa(desc, no);
+  auto h_Ke = h.clone();
   auto Id   = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
 
   for (auto k = 0; k < nv; k++)
     ind[k] = 0;
 
   Id.set_identity();
-  h_Ke = 0e0;
+  h_Ke.clear();
   for (auto i = 0; i <= no; i++) {
     ind[x_] = ind[px_] = i;
     for (auto j = 0; j <= no; j++) {
@@ -1101,14 +1170,11 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
   const int n_dof = 2;
 
-  const auto desc = M[0].getDescription();
-  const auto no   = desc->maxOrd();
-
-  auto Id = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto A_0 = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto x  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto v  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto w  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+  auto Id  = M.clone();
+  auto A_0 = M.clone();
+  auto x   = M.clone();
+  auto v   = M.clone();
+  auto w   = M.clone();
 
   Id.set_identity();
   v.set_identity();
@@ -1127,6 +1193,7 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   for (int k = 0; k < 2*n_dof; k++)
     A_0[k] -= Id[k];
   for (int k = 0; k < 2*n_dof; k++)
+    // First index is 1.
     w[k] = gtpsa::deriv(A_0[k], delta_+1);
   for (int k = 0; k < n_dof; k++) {
     v[2*k+1] = w[2*k];
@@ -1153,26 +1220,28 @@ void gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   int
     n;
   double
-    nu0[2];
+    nu_0[2];
   MNFType
     MNF = MNFType(desc, no);
 
-  auto hn    = gtpsa::tpsa(desc, no);
-  auto hn_re = gtpsa::tpsa(desc, no);
-  auto hn_im = gtpsa::tpsa(desc, no);
-  auto h_ke  = gtpsa::tpsa(desc, no);
-  auto gn    = gtpsa::tpsa(desc, no);
-  auto Kn    = gtpsa::tpsa(desc, no);
+  auto hn    = M[0].clone();
+  auto hn_re = M[0].clone();
+  auto hn_im = M[0].clone();
+  auto h_ke  = M[0].clone();
+  auto gn    = M[0].clone();
+  auto Kn    = M[0].clone();
+  auto k_re  = M[0].clone();
+  auto k_im  = M[0].clone();
 
-  auto Id    = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto A     = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto M_Fl  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto map1  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
-  auto map2  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
+  auto Id    = M.clone();
+  auto A     = M.clone();
+  auto M_Fl  = M.clone();
+  auto map1  = M.clone();
+  auto map2  = M.clone();
 
   Id.set_identity();
 
-  MNF.M = M.clone();
+  MNF.M._copyInPlace(M);
 
   // Compute fixed point.
   MNF.A_0 = gtpsa::GoFix(MNF.M);
@@ -1193,59 +1262,55 @@ void gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   printf("\nA_1:");
   MNF.A_1.show(std::cout, 1);
 
-  M_Fl =
-    gtpsa::compose
-    (gtpsa::minv(gtpsa::compose(MNF.A_0, MNF.A_1)),
-     gtpsa::compose(MNF.M, gtpsa::compose(MNF.A_0, MNF.A_1)));
+  M_Fl = gtpsa::compose(gtpsa::minv(MNF.A_1), gtpsa::compose(M_Fl, MNF.A_1));
+  map1._copyInPlace(M_Fl);
 
   MNF.R = mat2map(desc, get_lin_map(M_Fl));
   // Contstant term has index 0.
-  MNF.R[6].setVariable(0e0, 7, 0e0);
+  for (auto k = 4; k < 7; k++)
+    MNF.R[k].setVariable(0e0, k+1, 0e0);
 
   printf("\nR:");
   MNF.R.show(std::cout, 1);
   printf("\nM_Fl:");
   M_Fl.show(std::cout, 1);
 
-  std::cout << "\nSo far, so good!\n";
-  return;
-
-  MNF.K = 0e0;
-  for (auto k = 0; k < 2; k++) {
-    nu0[k] = std::atan2(MNF.R[2*k].get(1+2*k+1), MNF.R[2*k].get(1+2*k));
-    if (nu0[k] < 0e0) nu0[k] += 2e0*M_PI;
-    nu0[k] /= 2e0*M_PI;
-    MNF.K -= M_PI*nu0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
-  }
-  std::cout << "\n";
-  std::cout << std::fixed << std::setprecision(5)
-       << "nu0 = (" << nu0[X_] << ", " << nu0[Y_] << ")" << "\n";
-
-  map1._copyInPlace(MNF.M);
-  map1 = M.clone();
-
+  MNF.K.clear();
   // Coasting beam.
   auto ind = std::vector<ord_t>{0, 0, 0, 0, 1, 0, 0};
-  MNF.K.set(ind, 1e0, map1[ct_].get(ind)/2e0);
+  MNF.K = map1[ct_].get(ind)/2e0*sqr(Id[delta_]);
 
-  MNF.g = 0e0;
+  for (auto k = 0; k < 2; k++) {
+    // Constant term has index 0.
+    nu_0[k] = std::atan2(MNF.R[2*k].get(1+2*k+1), MNF.R[2*k].get(1+2*k));
+    if (nu_0[k] < 0e0) nu_0[k] += 2e0*M_PI;
+    nu_0[k] /= 2e0*M_PI;
+    MNF.K -= M_PI*nu_0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
+  }
+
+  std::cout << std::fixed << std::setprecision(5)
+	    << "\nnu_0 = [" << nu_0[X_] << ", " << nu_0[Y_] << "]" << "\n";
+  MNF.K.print("K", 1e-10, 0);
+
+  MNF.g.clear();
   for (auto k = 3; k <= no; k++) {
     n = std::pow(2, k-3);
-
     map2 =
       gtpsa::compose
       (map1, gtpsa::minv
        (gtpsa::compose(MNF.R, h_DF_to_M(MNF.K, Id, 3, k-1))));
     hn = M_to_h(get_mns(map2, k-1, k-1));
-    gn = get_g(nu0[X_], nu0[Y_], hn);
+    gn = get_g(nu_0[X_], nu_0[Y_], hn);
     MNF.g += gn;
     CtoR(hn, hn_re, hn_im);
     Kn = RtoC(get_Ker(hn_re), get_Ker(hn_im));
     MNF.K += Kn;
-
     A = h_DF_to_M(gn, Id, k, k);
     map1 = gtpsa::compose(gtpsa::minv(A), gtpsa::compose(map1, A));
   }
+
+  MNF.g.print("g", 1e-10, 0);
+  MNF.K.print("K", 1e-10, 0);
 
   // return MNF;
 }
