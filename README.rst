@@ -73,14 +73,16 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 		| M_to_h_DF
 
 
+	../src/gtpsa/python/src/ss_vect.h
+
+		| set_zero(void)
+
 	../src/gtpsa/python/src/ss_vect.cc
 
 		| maximum_orders()
 		| number_of_variables()
 		| maximum_orders()
 		| truncate()
-
-	../src/gtpsa/python/src/ss_vect.cc
 
 	TPSA map operations:
 
@@ -105,6 +107,8 @@ The *gtpsa* Python Pybind11 <- C++ part is in:
 The *gtpsa* C++ <- C functions are in:
 
 	../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
+
+		| clear(void)
 
 		| # Parameters: (constant part, monomial index, value).
 		| setVariable(const base_type v, const idx_t iv = 0, const base_type scale = 0).
