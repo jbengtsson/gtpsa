@@ -798,8 +798,8 @@ Eigen::VectorXd compute_nu_symp(const Eigen::MatrixXd &M)
     if (M(2*k, 2*k+1) < 0e0)
       nu[k] = 1e0 - nu[k];
   }
-  std::cout << std::fixed << std::setprecision(5)
-	    << "\ncompute_nu:\n  nu = [" << nu[X_] << ", " << nu[Y_] << "]\n";
+
+  printf("\ncompute_nu_symp: nu_0 = [%7.5f, %7.5f]\n", nu[X_], nu[Y_]);
 
   return nu;
 }
@@ -1208,16 +1208,25 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   return A_0;
 }
 
-
+#define RET_VALUE 0
+#if RET_VALUE
 MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+#else
+ gtpsa::tpsa gtpsa::Map_Norm
+(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0,
+ gtpsa::ss_vect<gtpsa::tpsa> &A_1, gtpsa::ss_vect<gtpsa::tpsa> &R,
+ gtpsa::tpsa &g)
+#endif
 {
   const auto desc = M[0].getDescription();
   const auto no   = desc->maxOrd();
 
   double
     nu_0[2];
-  MNFType
-    MNF = MNFType(desc, no);
+  // MNFType
+  //   MNF = MNFType(desc, no);
+
+  auto K     = M[0].clone();
 
   auto hn    = M[0].clone();
   auto hn_re = M[0].clone();
@@ -1228,6 +1237,8 @@ MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   auto k_re  = M[0].clone();
   auto k_im  = M[0].clone();
 
+  auto M_1   = M.clone();
+
   auto Id    = M.clone();
   auto A     = M.clone();
   auto M_Fl  = M.clone();
@@ -1236,75 +1247,60 @@ MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
   Id.set_identity();
 
-  MNF.M._copyInPlace(M);
+  M_1._copyInPlace(M);
 
   // Compute fixed point.
-  MNF.A_0 = gtpsa::GoFix(MNF.M);
-
-  printf("\nA_0:");
-  MNF.A_0.show(std::cout, 1);
+  A_0 = gtpsa::GoFix(M_1);
 
   // Translate to fix point.
-  M_Fl = gtpsa::compose(gtpsa::minv(MNF.A_0), gtpsa::compose(MNF.M, MNF.A_0));
+  M_Fl = gtpsa::compose(gtpsa::minv(A_0), gtpsa::compose(M_1, A_0));
 
-  printf("\nM_Fl:");
-  M_Fl.show(std::cout, 1);
- 
-  MNF.A_1 = mat2map(desc, compute_M_diag(get_lin_map(M_Fl)));
+  A_1 = mat2map(desc, compute_M_diag(get_lin_map(M_Fl)));
   // Contstant term has index 0.
-  MNF.A_1[6].setVariable(0e0, 7, 0e0);
+  A_1[6].setVariable(0e0, 7, 0e0);
 
-  printf("\nA_1:");
-  MNF.A_1.show(std::cout, 1);
-
-  M_Fl = gtpsa::compose(gtpsa::minv(MNF.A_1), gtpsa::compose(M_Fl, MNF.A_1));
+  M_Fl = gtpsa::compose(gtpsa::minv(A_1), gtpsa::compose(M_Fl, A_1));
   map1._copyInPlace(M_Fl);
 
-  MNF.R = mat2map(desc, get_lin_map(M_Fl));
+  R = mat2map(desc, get_lin_map(M_Fl));
   // Contstant term has index 0.
   for (auto k = 4; k < 7; k++)
-    MNF.R[k].setVariable(0e0, k+1, 0e0);
+    R[k].setVariable(0e0, k+1, 0e0);
 
-  printf("\nR:");
-  MNF.R.show(std::cout, 1);
-  printf("\nM_Fl:");
-  M_Fl.show(std::cout, 1);
-
-  MNF.K.clear();
+  K.clear();
   // Coasting beam.
   auto ind = std::vector<ord_t>{0, 0, 0, 0, 1, 0, 0};
-  MNF.K = map1[ct_].get(ind)/2e0*sqr(Id[delta_]);
+  K = map1[ct_].get(ind)/2e0*sqr(Id[delta_]);
 
   for (auto k = 0; k < 2; k++) {
     // Constant term has index 0.
-    nu_0[k] = std::atan2(MNF.R[2*k].get(1+2*k+1), MNF.R[2*k].get(1+2*k));
+    nu_0[k] = std::atan2(R[2*k].get(1+2*k+1), R[2*k].get(1+2*k));
     if (nu_0[k] < 0e0) nu_0[k] += 2e0*M_PI;
     nu_0[k] /= 2e0*M_PI;
-    MNF.K -= M_PI*nu_0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
+    K -= M_PI*nu_0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
   }
 
-  std::cout << std::fixed << std::setprecision(5)
-	    << "\nnu_0 = [" << nu_0[X_] << ", " << nu_0[Y_] << "]" << "\n";
-  MNF.K.print("K", 1e-10, 0);
+  printf("\nMap_Norm: nu_0 = [%7.5f, %7.5f]\n", nu_0[X_], nu_0[Y_]);
 
-  MNF.g.clear();
+  g.clear();
   for (auto k = 3; k <= no; k++) {
     map2 =
       gtpsa::compose
       (map1, gtpsa::minv
-       (gtpsa::compose(MNF.R, h_DF_to_M(MNF.K, Id, 3, k-1))));
+       (gtpsa::compose(R, h_DF_to_M(K, Id, 3, k-1))));
     hn = M_to_h(get_mns(map2, k-1, k-1));
     gn = get_g(nu_0[X_], nu_0[Y_], hn);
-    MNF.g += gn;
+    g += gn;
     CtoR(hn, hn_re, hn_im);
     Kn = RtoC(get_Ker(hn_re), get_Ker(hn_im));
-    MNF.K += Kn;
+    K += Kn;
     A = h_DF_to_M(gn, Id, k, k);
     map1 = gtpsa::compose(gtpsa::minv(A), gtpsa::compose(map1, A));
   }
 
-  MNF.g.print("g", 1e-10, 0);
-  MNF.K.print("K", 1e-10, 0);
-
+#if RET_VALUE
   return MNF;
+#else
+  return K;
+#endif
 }

@@ -76,6 +76,7 @@ Python interface:
 		| pinv
 		| (compose)
 		| M_to_h_DF
+		| h_DF_to_M
 		| CtoR
 		| RtoC
 		| GoFix
@@ -381,6 +382,7 @@ Not yet implemented:
 		| pinv
 		| compose
 		| M_to_h_DF
+		| Map_Norm
 
 TPSA descriptor operations:
 
