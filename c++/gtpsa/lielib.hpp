@@ -45,22 +45,19 @@ namespace gtpsa {
    *
    */
 
+  void get_mns
+  (const ss_vect<tpsa> &x, const int no1, const int no2, ss_vect<tpsa> &y);
   tpsa M_to_h(const ss_vect<tpsa> &M);
   tpsa M_to_h_DF(const ss_vect<tpsa> &M);
-  ss_vect<tpsa> h_DF_to_M
-  (const tpsa &h_DF, const ss_vect<tpsa> &x, const int k1, const int k2);
-
+  void h_DF_to_M
+  (const tpsa &h_DF, const ss_vect<tpsa> &x, const int k1, const int k2,
+   ss_vect<tpsa> &M);
   void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
   tpsa RtoC(const tpsa &a_re, const tpsa &a_im);
-  ss_vect<tpsa> GoFix(const ss_vect<tpsa> &M);
-  // MNFType Map_Norm(const ss_vect<tpsa> &M);
-#if 0
-  MNFType Map_Norm(const ss_vect<tpsa> &M);
-#else
+  void GoFix(const ss_vect<tpsa> &M, ss_vect<tpsa> &A_0);
   tpsa Map_Norm
   (const ss_vect<tpsa> &M, ss_vect<tpsa> &A_0, ss_vect<tpsa> &A_1,
    ss_vect<tpsa> &R, tpsa &g);
-#endif
 } // namespace gtpsa
 
 #endif //_GTPSA_LIELIB_H_

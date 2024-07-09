@@ -103,8 +103,6 @@ namespace gtpsa::python{
     {}
   };
 
-
-
   /*
    * Support a .loc["x"] access to the elements
    */
@@ -216,8 +214,6 @@ static const char init_ss_vect_desc_doc [] = \
 template<class WrappedClass, class P_MGR>
 struct AddMethods
 {
-
-
   template<typename T>
   void add_methods(py::class_<WrappedClass, P_MGR> &a_cls){
     a_cls
@@ -281,15 +277,29 @@ struct AddMethods
       .def(py::self  * double())
       .def(py::self  / double())
 
-      .def("rcompose", &WrappedClass::rcompose)
+      // ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp
       .def("getOrder", &WrappedClass::rgetOrder)
+      .def("deriv", &WrappedClass::rderiv)
+      // .def("integ", &WrappedClass::rinteg)
 
-      //.def(double()  + py::self)
-      //.def(double()  - py::self)
-      //.def(double()  * py::self)
-      //.def(double()  / py::self)
+      // ../src/gtpsa/c++/gtpsa/mad/container_wrapper.tpp
+      .def("mnrm", &WrappedClass::computeNorm)
+      .def("vec2fld", &WrappedClass::rvec2fld)
+      .def("fld2vec", &WrappedClass::fld2vec)
+      .def("fgrad", &WrappedClass::fgrad)
+      .def("liebra", &WrappedClass::rliebra)
+      .def("exppb", &WrappedClass::rexppb)
+      .def("logpb", &WrappedClass::rlogpb)
+      .def("compose", &WrappedClass::rcompose)
+      .def("inv", &WrappedClass::rminv)
+      .def("pinv", &WrappedClass::rpminv)
+
+      // .def(double()  + py::self)
+      // .def(double()  - py::self)
+      // .def(double()  * py::self)
+      // .def(double()  / py::self)
       // .def( gtpsa::ss_vect<double>() - py::self)
-      ;
+    ;
   }
 
   template<typename T>

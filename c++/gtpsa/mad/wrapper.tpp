@@ -38,6 +38,7 @@
 
 #include <gtpsa/desc.hpp>
 
+
 namespace gtpsa::mad {
   // forward declaration
   class GTPSA_CLASS(Wrapper);
@@ -167,6 +168,7 @@ namespace gtpsa::mad {
     { return GTPSA_METH(deriv)(src.getPtr(), this->getPtr(), iv);}
     void rinteg    (const GTPSA_CLASS(Wrapper)& src, const int iv   )
     { return GTPSA_METH(integ)(src.getPtr(), this->getPtr(), iv);}
+
     /**
      * @short set uid if != 0
      *
@@ -259,7 +261,6 @@ namespace gtpsa::mad {
     inline auto getsm(const std::vector<int> &m) const {
       return GTPSA_METH(getsm)(this->getPtr(), m.size(), m.data());
     }
-
 
     /**
      * @brief a*x[0]+b
@@ -539,7 +540,6 @@ namespace gtpsa::mad {
    GTPSA_CLASS(Wrapper) *r2) {
     process1to2w_(t, r1, r2, GTPSA_METH(sincosh));
   }
-
 
   /**
    * would naturally blend into bridge, but also required for instantiating

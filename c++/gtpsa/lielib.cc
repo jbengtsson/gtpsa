@@ -200,7 +200,7 @@ gtpsa::tpsa get_h_k(const gtpsa::tpsa &h, const int k)
 }
 
 
-gtpsa::tpsa get_mns(const gtpsa::tpsa &a, const int no1, const int no2)
+gtpsa::tpsa get_mns_1(const gtpsa::tpsa &a, const int no1, const int no2)
 {
   const auto desc = a.getDescription();
   const auto no   = desc->maxOrd();
@@ -214,16 +214,14 @@ gtpsa::tpsa get_mns(const gtpsa::tpsa &a, const int no1, const int no2)
 }
 
 
-gtpsa::ss_vect<gtpsa::tpsa> get_mns
-(const gtpsa::ss_vect<gtpsa::tpsa> &x, const int no1, const int no2)
+void gtpsa::get_mns
+(const gtpsa::ss_vect<gtpsa::tpsa> &x, const int no1, const int no2,
+ gtpsa::ss_vect<gtpsa::tpsa> &y)
 {
   const int ps_dim = 6;
 
-  auto y = x.clone();
-
   for (int k = 0; k < ps_dim; k++)
-    y[k] = get_mns(x[k], no1, no2);
-  return y;
+    y[k] = get_mns_1(x[k], no1, no2);
 }
 
 
@@ -713,21 +711,19 @@ gtpsa::tpsa gtpsa::M_to_h_DF(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
 #if 1
 
-gtpsa::ss_vect<gtpsa::tpsa> gtpsa::h_DF_to_M
+void gtpsa::h_DF_to_M
 (const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
- const int k2)
+ const int k2, gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
   // Fexpo in Forest's F77 LieLib.
   // Compute map from Dragt-Finn factorisation:
   //   M = exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:) * X
   auto v_DF = x.clone();
-  auto M    = x.clone();
 
   v_DF = h_to_v(h_DF);
   M = exp_v_fac_to_M(v_DF, x, k1-1, k2-1, 1e0);
   // Contstant term has index 0.
   M[6].setVariable(0e0, 7, 0e0);
-  return M;
 }
 
 #else
@@ -1163,12 +1159,12 @@ gtpsa::tpsa get_Ker(const gtpsa::tpsa &h)
 }
 
 
-gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+void gtpsa::GoFix
+(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0)
 {
   const int n_dof = 2;
 
   auto Id  = M.clone();
-  auto A_0 = M.clone();
   auto x   = M.clone();
   auto v   = M.clone();
   auto w   = M.clone();
@@ -1204,19 +1200,12 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
   // A_0 = exp_v_to_M(w, Id, 1e-7, 10000);
   A_0 = exp_v_to_M(w, Id);
-
-  return A_0;
 }
 
-#define RET_VALUE 0
-#if RET_VALUE
-MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
-#else
- gtpsa::tpsa gtpsa::Map_Norm
+gtpsa::tpsa gtpsa::Map_Norm
 (const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0,
  gtpsa::ss_vect<gtpsa::tpsa> &A_1, gtpsa::ss_vect<gtpsa::tpsa> &R,
  gtpsa::tpsa &g)
-#endif
 {
   const auto desc = M[0].getDescription();
   const auto no   = desc->maxOrd();
@@ -1244,13 +1233,14 @@ MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   auto M_Fl  = M.clone();
   auto map1  = M.clone();
   auto map2  = M.clone();
+  auto t_map = M.clone();
 
   Id.set_identity();
 
   M_1._copyInPlace(M);
 
   // Compute fixed point.
-  A_0 = gtpsa::GoFix(M_1);
+  gtpsa::GoFix(M_1, A_0);
 
   // Translate to fix point.
   M_Fl = gtpsa::compose(gtpsa::minv(A_0), gtpsa::compose(M_1, A_0));
@@ -1284,23 +1274,21 @@ MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
   g.clear();
   for (auto k = 3; k <= no; k++) {
+    h_DF_to_M(K, Id, 3, k-1, t_map);
     map2 =
       gtpsa::compose
       (map1, gtpsa::minv
-       (gtpsa::compose(R, h_DF_to_M(K, Id, 3, k-1))));
-    hn = M_to_h(get_mns(map2, k-1, k-1));
+       (gtpsa::compose(R, t_map)));
+    get_mns(map2, k-1, k-1, t_map);
+    hn = M_to_h(t_map);
     gn = get_g(nu_0[X_], nu_0[Y_], hn);
     g += gn;
     CtoR(hn, hn_re, hn_im);
     Kn = RtoC(get_Ker(hn_re), get_Ker(hn_im));
     K += Kn;
-    A = h_DF_to_M(gn, Id, k, k);
+    h_DF_to_M(gn, Id, k, k, A);
     map1 = gtpsa::compose(gtpsa::minv(A), gtpsa::compose(map1, A));
   }
 
-#if RET_VALUE
-  return MNF;
-#else
   return K;
-#endif
 }

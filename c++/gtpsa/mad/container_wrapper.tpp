@@ -159,6 +159,7 @@ namespace gtpsa::mad {
 
       GTPSA_METH(pminv)(tmpa.size(), tmpa.data(),  tmpc.data(), select.data());
     }
+
   protected:
     inline void rapply2
       (const GTPSA_CLASS(ContainerWrapper) &ma,
@@ -170,7 +171,6 @@ namespace gtpsa::mad {
       auto tmpc = this->getBufferPtrs();
 
       f(tmpa.size(), tmpa.data(), tmpb.data(), tmpc.data());
-
     }
 
     inline std::vector<GTPSA_PTR_T *> getBufferPtrs(void) const {
@@ -191,7 +191,6 @@ namespace gtpsa::mad {
       return vec;
     }
   };
-
 } // namespace gtpsa::mad
 
 /*  guard defines omitted intentionally */

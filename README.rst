@@ -102,12 +102,12 @@ and the implementation:
 		|
 		|   print(desc.index([1, 0, 0, 0, 0, 0, 0]))
 
-	../src/gtpsa/python/src/ss_vect.h
-
-		| set_zero(void)
-
 	../src/gtpsa/python/src/ss_vect.cc
 
+		| # Support a .loc["x"] access to the elements.
+		|     template<class WrappedClass, class P_MGR, typename T>
+		|
+		| set_zero(void)
 		| truncate
 		| # E.g.:
 		|     desc.truncate(3)
