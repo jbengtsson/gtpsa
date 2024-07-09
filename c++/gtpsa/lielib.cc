@@ -190,7 +190,6 @@ gtpsa::tpsa get_h_k(const gtpsa::tpsa &h, const int k)
   // Take in Forest's F77 LieLib.
   // Get monomials of order k.
   const auto desc = h.getDescription();
-  const auto no   = desc->maxOrd();
 
   auto h1  = gtpsa::tpsa(desc, k-1);
   auto h2  = gtpsa::tpsa(desc, k);
@@ -724,8 +723,6 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::h_DF_to_M
   auto v_DF = x.clone();
   auto M    = x.clone();
 
-  printf("\nh_DF_to_M: k1 = %d k2 = %d\n", k1-1, k2-1);
-
   v_DF = h_to_v(h_DF);
   M = exp_v_fac_to_M(v_DF, x, k1-1, k2-1, 1e0);
   // Contstant term has index 0.
@@ -1212,13 +1209,11 @@ gtpsa::ss_vect<gtpsa::tpsa> gtpsa::GoFix(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 }
 
 
-void gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+MNFType gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 {
   const auto desc = M[0].getDescription();
   const auto no   = desc->maxOrd();
 
-  int
-    n;
   double
     nu_0[2];
   MNFType
@@ -1294,7 +1289,6 @@ void gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
   MNF.g.clear();
   for (auto k = 3; k <= no; k++) {
-    n = std::pow(2, k-3);
     map2 =
       gtpsa::compose
       (map1, gtpsa::minv
@@ -1312,5 +1306,5 @@ void gtpsa::Map_Norm(const gtpsa::ss_vect<gtpsa::tpsa> &M)
   MNF.g.print("g", 1e-10, 0);
   MNF.K.print("K", 1e-10, 0);
 
-  // return MNF;
+  return MNF;
 }
