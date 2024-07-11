@@ -347,7 +347,7 @@ void  gtpsa::ss_vect<gtpsa::tpsa>::rcompose
 }
 
 template<>
-void  gtpsa::ss_vect<gtpsa::tpsa>::rminv(const gtpsa::ss_vect<gtpsa::tpsa>& a)
+void gtpsa::ss_vect<gtpsa::tpsa>::rminv(const gtpsa::ss_vect<gtpsa::tpsa>& a)
 {
   FilterBasePointers <gtpsa::tpsa, gtpsa::TpsaTypeInfo> filter;
 
@@ -366,10 +366,8 @@ void  gtpsa::ss_vect<gtpsa::tpsa>::rpminv
   const bridge_container_type ma_b(filter.as_const(a.state_space));
   bridge_container_type mc_b(filter.as_non_const(this->state_space));
 
-  mc_b.rminv(ma_b);
+  mc_b.rpminv(ma_b, select);
 }
-
-
 
 template<>
 double gtpsa::ss_vect<gtpsa::tpsa>::computeNorm(void) const
@@ -379,7 +377,7 @@ double gtpsa::ss_vect<gtpsa::tpsa>::computeNorm(void) const
   return bc.computeNorm();
 }
 template<>
-void  gtpsa::ss_vect<gtpsa::tpsa>::rgetOrder
+void gtpsa::ss_vect<gtpsa::tpsa>::rgetOrder
 (const gtpsa::ss_vect<gtpsa::tpsa>& a, const int order)
 {
   for(size_t i=0; i<this->state_space.size(); ++i){
@@ -388,10 +386,11 @@ void  gtpsa::ss_vect<gtpsa::tpsa>::rgetOrder
 }
 
 template<>
-void  gtpsa::ss_vect<gtpsa::tpsa>::rderiv
+void gtpsa::ss_vect<gtpsa::tpsa>::rderiv
 (const gtpsa::ss_vect<gtpsa::tpsa>& a, const int order)
 {
   for(size_t i=0; i<this->state_space.size(); ++i){
     (*this)[i].rderiv(a[i], order);
   }
 }
+

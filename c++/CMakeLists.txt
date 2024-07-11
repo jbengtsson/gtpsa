@@ -50,8 +50,6 @@ set(gtpsa_c++_HEADERS
   gtpsa/ss_vect.h
 
   gtpsa/utils_tps.hpp
-
-  gtpsa/lielib.hpp
   )
 
 install(FILES ${gtpsa_c++_HEADERS}

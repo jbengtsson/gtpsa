@@ -12,6 +12,7 @@
 #include <complex>
 #include <armadillo>
 
+// #include <gtpsa/lielib.hpp>
 
 namespace gtpsa {
 
@@ -38,6 +39,7 @@ namespace gtpsa {
       report_vector_dimension_mismatch(nv, n);
     }
   }
+
 
   template<typename T>
   class ss_vect {
@@ -381,10 +383,10 @@ namespace gtpsa {
     }
 
     inline void rpminv(const ss_vect<T>& a, std::vector<idx_t>& select) {
-      throw std::runtime_error("rminv currently only implemented for tpsa");
+      throw std::runtime_error("rpminv currently only implemented for tpsa");
     }
 
-    inline void rcompose(const ss_vect<T>& a, const ss_vect<T>& b){
+    inline void rcompose(const ss_vect<T>& a, const ss_vect<T>& b) {
       throw std::runtime_error("rcompose currently only implemented for tpsa");
     }
 
@@ -400,25 +402,49 @@ namespace gtpsa {
       throw std::runtime_error("fgrad currently only implemented for tpsa");
     }
 
-    void rliebra(const ss_vect<T>& a, const ss_vect<T>& b){
+    void rliebra(const ss_vect<T>& a, const ss_vect<T>& b) {
       throw std::runtime_error("rliebra currently only implemented for tpsa");
     }
 
-    void rexppb(const ss_vect<T>& a, const ss_vect<T>& b){
+    void rexppb(const ss_vect<T>& a, const ss_vect<T>& b) {
       throw std::runtime_error("rexpbp currently only implemented for tpsa");
     }
 
-    void rlogpb(const ss_vect<tpsa>& a, const ss_vect<tpsa>& b){
+    void rlogpb(const ss_vect<tpsa>& a, const ss_vect<tpsa>& b) {
       throw std::runtime_error("rlogpb currently only implemented for tpsa");
     }
 
-    void rgetOrder(const ss_vect<T>& o, const int order){
+    void rgetOrder(const ss_vect<T>& o, const int order) {
       throw std::runtime_error("currently only implemented for tpsa");
     }
 
-    void rderiv(const ss_vect<T>& o, const int order){
+    void rderiv(const ss_vect<T>& o, const int order) {
       throw std::runtime_error("currently only implemented for tpsa");
     }
+
+
+    void get_mns
+    (const ss_vect<tpsa> &x, const int no1, const int no2, ss_vect<tpsa> &y)
+      const;
+
+    void M_to_h(const ss_vect<tpsa> &M, tpsa &h) const;
+
+    void M_to_h_DF(const ss_vect<tpsa> &M, tpsa &h) const;
+
+    void GoFix(const ss_vect<tpsa> &M, ss_vect<tpsa> &A_0) const;
+
+    void Map_Norm
+    (const ss_vect<tpsa> &M, ss_vect<tpsa> &A_0, ss_vect<tpsa> &A_1,
+     ss_vect<tpsa> &R, tpsa &g, tpsa &K) const;
+
+    // void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
+
+    // void RtoC(const tpsa &a_re, const tpsa &a_im);
+
+    // void h_DF_to_M
+    // (const tpsa &h_DF, const ss_vect<tpsa> &x, const int k1, const int k2,
+    //  ss_vect<tpsa> &M);
+
 
     /**
      * @btodo:
@@ -470,6 +496,7 @@ namespace gtpsa {
     return strm;
   }
 
+
   /*
    * @brief special installation
    */
@@ -516,7 +543,7 @@ namespace gtpsa {
       // not all tpsa need to address the same number of variables or knobs
 
       this->state_space.reserve(n);
-      for(size_t i=0; i<n; ++i){
+      for(size_t i=0; i<n; ++i) {
 	this->state_space.push_back(std::move(gtpsa::tpsa(t, mad_tpsa_same)));
       }
     }
@@ -546,7 +573,7 @@ namespace gtpsa {
   template<>
   inline void ss_vect<std::complex<double>>::cst
   (std::vector<std::complex<double>>& r) const {
-    for(size_t i = 0; i < this->size(); ++i){ r[i] = this->state_space[i]; }
+    for(size_t i = 0; i < this->size(); ++i) { r[i] = this->state_space[i]; }
     // std::transform
     //   (begin(), this->state_space.end(), r.state_space.begin(), [](T& elem)
     //   { return elem.cst();});
@@ -623,7 +650,7 @@ namespace gtpsa {
     }
     // throw std::runtime_error("gtpsa set identity needs to be implemented!");
     // std::for_each(this->state_space.begin(), this->state_space.end(),
-    // 		  [](gtpsa::tpsa& v){ v.clear(); };
+    // 		  [](gtpsa::tpsa& v) { v.clear(); };
   }
 
   /**
@@ -735,6 +762,7 @@ namespace gtpsa {
    *
    * Intd in Forest's F77 LieLib.
    */
+
   template<>
   void ss_vect<tpsa>::fld2vec(tpsa * r) const;
   template<>
@@ -751,6 +779,42 @@ namespace gtpsa {
 
   template<>
   void ss_vect<tpsa>::rderiv(const ss_vect<tpsa>& a, const int order);
+
+
+  template<typename T>
+  void get_mns
+  (const ss_vect<T> &x, const int no1, const int no2, ss_vect<T> &y)
+  { x.get_mns(x, no1, no2, y); }
+
+  template<typename T>
+  void M_to_h(const ss_vect<T> &M, T &h)
+  { M.M_to_h(M, h); }
+
+  template<typename T>
+  void M_to_h_DF(const ss_vect<T> &M, T &h)
+  { M.M_to_h_DF(M, h); }
+
+  template<typename T>
+  void GoFix(const ss_vect<T> &M, ss_vect<T> &A_0)
+  { M.GoFix(M, A_0); }
+
+  template<typename T>
+  void Map_Norm
+  (const ss_vect<T> &M, ss_vect<T> &A_0, ss_vect<T> &A_1, ss_vect<T> &R, T &g,
+   T &K)
+  { M.Map_Norm(M, A_0, A_1, R, g, K); }
+
+  // template<typename T>
+  // void CtoR(const T &a, T &a_re, T &a_im) {}
+
+  // template<typename T>
+  // void RtoC(const T &a_re, const T &a_im) {}
+
+  // template<typename T>
+  // void h_DF_to_M
+  // (const T &h_DF, const ss_vect<T> &x, const int k1, const int k2,
+  //  ss_vect<T> &M) {}
+
 
   inline ss_vect<tpsa> compose(const ss_vect<tpsa>& a, const ss_vect<tpsa>& b)
   {
@@ -794,7 +858,9 @@ namespace gtpsa {
   }
 
 } /* namespace gtpsa */
+
 #endif /* _GTPSA_SS_VECT_H_ */
+
 /*
  * Local Variables:
  * mode: c++

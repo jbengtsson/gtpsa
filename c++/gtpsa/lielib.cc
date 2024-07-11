@@ -6,7 +6,8 @@
 #include <gsl/gsl_eigen.h>
 #include <boost/math/special_functions/sign.hpp>
 
-#include <gtpsa/lielib.hpp>
+#include <gtpsa/ss_vect.h>
+// #include <gtpsa/lielib.hpp>
 // #include <gtpsa/mad/tpsa_wrapper.hpp>
 #include <assert.h>
 
@@ -52,15 +53,6 @@ gtpsa::ss_vect<gtpsa::tpsa> mat2map
       B[j] += A(j, k)*Id[k];
 
   return B;
-}
-
-
-void print_map(const std::string &str, const gtpsa::ss_vect<gtpsa::tpsa> &M)
-{
-  const double eps = 1e-10;
-
-  for (auto k = 0; k < M.size(); k++) 
-    M[k].print(str.c_str(), eps, 0);
 }
 
 
@@ -214,9 +206,10 @@ gtpsa::tpsa get_mns_1(const gtpsa::tpsa &a, const int no1, const int no2)
 }
 
 
-void gtpsa::get_mns
+template<>
+void gtpsa::ss_vect<gtpsa::tpsa>::get_mns
 (const gtpsa::ss_vect<gtpsa::tpsa> &x, const int no1, const int no2,
- gtpsa::ss_vect<gtpsa::tpsa> &y)
+ gtpsa::ss_vect<gtpsa::tpsa> &y) const
 {
   const int ps_dim = 6;
 
@@ -430,7 +423,9 @@ void scl_mns(gtpsa::tpsa &mn)
 }
 
 
-gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+template<>
+void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h
+(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::tpsa &h) const
 {
   // Intd in Forest's F77 LieLib.
   // E. Forest, M. Berz, J. Irwin 𝑁𝑜𝑟𝑚𝑎𝑙 𝐹𝑜𝑟𝑚 𝑀𝑒𝑡ℎ𝑜𝑑𝑠 𝑓𝑜𝑟 𝐶𝑜𝑚𝑝𝑙𝑖𝑐𝑎𝑡𝑒𝑑 𝑃𝑒𝑟𝑖𝑜𝑑𝑖𝑐 𝑆𝑦𝑠𝑡𝑒𝑚𝑠:
@@ -443,7 +438,6 @@ gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
 
   auto mn   = M[0].clone();
   auto ps_k = M[0].clone();
-  auto h    = M[0].clone();
 
   h.clear();
   for (auto k = 0; k < ps_dim; ++k) {
@@ -455,20 +449,21 @@ gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
     scl_mns(mn);
     h += (k % 2 == 0)? -mn : mn;
   }
-  return h;
 }
 
 #else
 
 // Remark: the fld2vecfunction in the CERN the gtpsa library doesn't work for
 // parameter dependence.
-gtpsa::tpsa gtpsa::M_to_h(const gtpsa::ss_vect<gtpsa::tpsa> &M)
+
+template<>
+void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h
+(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::tpsa &h) const
 {
   auto h = M[0].clone();
   h.clear();
   // In ../gtpsa/mad-ng/src/mad_tpsa_mops.c.
   M.fld2vec(&h);
-  return h;
 }
 
 #endif
@@ -553,7 +548,116 @@ gtpsa::tpsa tps_compute_function
 }
 
 
-void gtpsa::CtoR(const gtpsa::tpsa &a, gtpsa::tpsa &a_re, gtpsa::tpsa &a_im)
+void param_to_tps(const gtpsa::tpsa &a, gtpsa::tpsa &b)
+{
+  std::vector<num_t> v(a.length());
+  a.getv(0, &v);
+  b.setv(0, v);
+}
+
+
+void param_to_ss_vect
+(const gtpsa::ss_vect<gtpsa::tpsa> &A, gtpsa::ss_vect<gtpsa::tpsa> &B)
+{
+  for (auto k = 0; k < A.size(); k++)
+    param_to_tps(A[k], B[k]);
+}
+
+
+void tps_to_param(const gtpsa::tpsa &a, gtpsa::tpsa &b)
+{
+  std::vector<num_t> v(a.length());
+  a.getv(0, &v);
+  b.setv(0, v);
+}
+
+
+void ss_vect_to_param
+(const gtpsa::ss_vect<gtpsa::tpsa> &A, gtpsa::ss_vect<gtpsa::tpsa> &B)
+{
+  for (auto k = 0; k < A.size(); k++)
+    tps_to_param(A[k], B[k]);
+}
+
+
+template<>
+void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF
+(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::tpsa &h) const
+{
+  // Liefact in Forest's F77 LieLib.
+  // A. Dragt, J. Finn 𝐿𝑖𝑒 𝑆𝑒𝑟𝑖𝑒𝑠 𝑎𝑛𝑑 𝐼𝑛𝑣𝑎𝑟𝑖𝑎𝑛𝑡 𝐹𝑢𝑛𝑐𝑡𝑖𝑜𝑛𝑠 𝑓𝑜𝑟 𝐴𝑛𝑎𝑙𝑦𝑡𝑖𝑐 𝑆𝑦𝑚𝑝𝑙𝑒𝑐𝑡𝑖𝑐 𝑀𝑎𝑝𝑠
+  // J. Math. Phys. 17, 2215-2227 (1976).
+  // Dragt-Finn factorization:
+  //   M ->  M_lin * exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:)
+  //
+  // Workaround because the CERN gtpsa map compose can't handle parameter
+  // dependence.
+  ord_t no, po;
+  int   np;
+
+  const auto desc0 = M[0].getDescription();
+  const auto nv    = M[0].getDescription()->getNv(&no, &np, &po);
+
+  printf("\nM_to_h_DF\n");
+
+  if (np != 0) {
+    const auto desc1 = std::make_shared<gtpsa::desc>(nv+np, no);
+    const auto desc2 = std::make_shared<gtpsa::desc>(nv, no, np, no);
+
+    auto h1 = gtpsa::tpsa(desc1, no);
+    auto h2 = gtpsa::tpsa(desc2, no);
+    auto M1 = gtpsa::ss_vect<gtpsa::tpsa>(desc1, no);
+
+    param_to_ss_vect(M, M1);
+    M1[6].set(7, 0e0, 1e0);
+    gtpsa::ss_vect<gtpsa::tpsa>::M_to_h(M_to_M_fact(M1), h1);
+    tps_to_param(h1, h);
+  } else
+    gtpsa::ss_vect<gtpsa::tpsa>::M_to_h(M_to_M_fact(M), h);
+}
+
+
+#if 1
+
+void h_DF_to_M
+(const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
+ const int k2, gtpsa::ss_vect<gtpsa::tpsa> &M)
+{
+  // Fexpo in Forest's F77 LieLib.
+  // Compute map from Dragt-Finn factorisation:
+  //   M = exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:) * X
+  auto v_DF = x.clone();
+
+  v_DF = h_to_v(h_DF);
+  M = exp_v_fac_to_M(v_DF, x, k1-1, k2-1, 1e0);
+  // Contstant term has index 0.
+  M[6].setVariable(0e0, 7, 0e0);
+}
+
+#else
+
+gtpsa::ss_vect<gtpsa::tpsa> h_DF_to_M
+(const gtpsa::tpsa &h, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
+ const int k2)
+{
+  // Fexpo in Forest's LieLib.
+  // Compute map from Dragt-Finn factorisation:
+  //   exp(:h_3:) exp(:h_4:) ... exp(:h_no:)
+  auto h_k = x[0].clone();
+  auto M   = x.clone();
+
+  M.set_identity();
+  for (auto k = k2; k >= k1; k--) {
+    h_k = get_h_k(h, k);
+    M = M*LieExp(h_k, x);
+  }
+  return M;
+}
+
+#endif
+
+
+void CtoR(const gtpsa::tpsa &a, gtpsa::tpsa &a_re, gtpsa::tpsa &a_im)
 {
 
   const int n_dof = 2;
@@ -604,14 +708,14 @@ void gtpsa::CtoR(const gtpsa::tpsa &a, gtpsa::tpsa &a_re, gtpsa::tpsa &a_im)
 }
 
 
-gtpsa::tpsa gtpsa::RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
+gtpsa::tpsa  RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
 {
   const int n_dof = 2;
 
   const auto desc = a_re.getDescription();
   const auto no   = desc->maxOrd();
 
-  auto b   = a_re.clone();
+  auto b = a_re.clone();
 
   auto Id  = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
   auto map = gtpsa::ss_vect<gtpsa::tpsa>(desc, no);
@@ -635,118 +739,9 @@ gtpsa::tpsa gtpsa::RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
   tmp[0] = b;
   b = gtpsa::compose(tmp, map)[0];
   b = tps_compute_function(b, f_q_k_conj);
+
   return b;
 }
-
-
-void param_to_tps(const gtpsa::tpsa &a, gtpsa::tpsa &b)
-{
-  std::vector<num_t> v(a.length());
-  a.getv(0, &v);
-  b.setv(0, v);
-}
-
-
-void param_to_ss_vect
-(const gtpsa::ss_vect<gtpsa::tpsa> &A, gtpsa::ss_vect<gtpsa::tpsa> &B)
-{
-  for (auto k = 0; k < A.size(); k++)
-    param_to_tps(A[k], B[k]);
-}
-
-
-void tps_to_param(const gtpsa::tpsa &a, gtpsa::tpsa &b)
-{
-  std::vector<num_t> v(a.length());
-  a.getv(0, &v);
-  b.setv(0, v);
-}
-
-
-void ss_vect_to_param
-(const gtpsa::ss_vect<gtpsa::tpsa> &A, gtpsa::ss_vect<gtpsa::tpsa> &B)
-{
-  for (auto k = 0; k < A.size(); k++)
-    tps_to_param(A[k], B[k]);
-}
-
-
-gtpsa::tpsa gtpsa::M_to_h_DF(const gtpsa::ss_vect<gtpsa::tpsa> &M)
-{
-  // Liefact in Forest's F77 LieLib.
-  // A. Dragt, J. Finn 𝐿𝑖𝑒 𝑆𝑒𝑟𝑖𝑒𝑠 𝑎𝑛𝑑 𝐼𝑛𝑣𝑎𝑟𝑖𝑎𝑛𝑡 𝐹𝑢𝑛𝑐𝑡𝑖𝑜𝑛𝑠 𝑓𝑜𝑟 𝐴𝑛𝑎𝑙𝑦𝑡𝑖𝑐 𝑆𝑦𝑚𝑝𝑙𝑒𝑐𝑡𝑖𝑐 𝑀𝑎𝑝𝑠
-  // J. Math. Phys. 17, 2215-2227 (1976).
-  // Dragt-Finn factorization:
-  //   M ->  M_lin * exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:)
-  //
-  // Workaround because the CERN gtpsa map compose can't handle parameter
-  // dependence.
-  ord_t no, po;
-  int   np;
-
-  const auto desc0 = M[0].getDescription();
-  const auto nv    = M[0].getDescription()->getNv(&no, &np, &po);
-
-  auto h = gtpsa::tpsa(desc0, no);
-
-  if (np != 0) {
-    const auto desc1 = std::make_shared<gtpsa::desc>(nv+np, no);
-    const auto desc2 = std::make_shared<gtpsa::desc>(nv, no, np, no);
-
-    auto h1 = gtpsa::tpsa(desc1, no);
-    auto h2 = gtpsa::tpsa(desc2, no);
-    auto M1 = gtpsa::ss_vect<gtpsa::tpsa>(desc1, no);
-
-    param_to_ss_vect(M, M1);
-    M1[6].set(7, 0e0, 1e0);
-    h1 = M_to_h(M_to_M_fact(M1));
-    tps_to_param(h1, h2);
-    return h2;
-  } else {
-    h = M_to_h(M_to_M_fact(M));
-    return h;
-  }
-}
-
-
-#if 1
-
-void gtpsa::h_DF_to_M
-(const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
- const int k2, gtpsa::ss_vect<gtpsa::tpsa> &M)
-{
-  // Fexpo in Forest's F77 LieLib.
-  // Compute map from Dragt-Finn factorisation:
-  //   M = exp(:h_3:) * exp(:h_4:) ...  * exp(:h_n:) * X
-  auto v_DF = x.clone();
-
-  v_DF = h_to_v(h_DF);
-  M = exp_v_fac_to_M(v_DF, x, k1-1, k2-1, 1e0);
-  // Contstant term has index 0.
-  M[6].setVariable(0e0, 7, 0e0);
-}
-
-#else
-
-gtpsa::ss_vect<gtpsa::tpsa> h_DF_to_M
-(const gtpsa::tpsa &h, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
- const int k2)
-{
-  // Fexpo in Forest's LieLib.
-  // Compute map from Dragt-Finn factorisation:
-  //   exp(:h_3:) exp(:h_4:) ... exp(:h_no:)
-  auto h_k = x[0].clone();
-  auto M   = x.clone();
-
-  M.set_identity();
-  for (auto k = k2; k >= k1; k--) {
-    h_k = get_h_k(h, k);
-    M = M*LieExp(h_k, x);
-  }
-  return M;
-}
-
-#endif
 
 
 Eigen::MatrixXd get_lin_map(const gtpsa::ss_vect<gtpsa::tpsa> &map)
@@ -1159,8 +1154,9 @@ gtpsa::tpsa get_Ker(const gtpsa::tpsa &h)
 }
 
 
-void gtpsa::GoFix
-(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0)
+template<>
+void gtpsa::ss_vect<gtpsa::tpsa>::GoFix
+(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0) const
 {
   const int n_dof = 2;
 
@@ -1202,20 +1198,20 @@ void gtpsa::GoFix
   A_0 = exp_v_to_M(w, Id);
 }
 
-gtpsa::tpsa gtpsa::Map_Norm
+
+template<>
+void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
 (const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0,
  gtpsa::ss_vect<gtpsa::tpsa> &A_1, gtpsa::ss_vect<gtpsa::tpsa> &R,
- gtpsa::tpsa &g)
+ gtpsa::tpsa &g, gtpsa::tpsa &K) const
 {
-  const auto desc = M[0].getDescription();
+  const auto desc = R[0].getDescription();
   const auto no   = desc->maxOrd();
 
   double
     nu_0[2];
   // MNFType
   //   MNF = MNFType(desc, no);
-
-  auto K     = M[0].clone();
 
   auto hn    = M[0].clone();
   auto hn_re = M[0].clone();
@@ -1227,7 +1223,6 @@ gtpsa::tpsa gtpsa::Map_Norm
   auto k_im  = M[0].clone();
 
   auto M_1   = M.clone();
-
   auto Id    = M.clone();
   auto A     = M.clone();
   auto M_Fl  = M.clone();
@@ -1240,7 +1235,7 @@ gtpsa::tpsa gtpsa::Map_Norm
   M_1._copyInPlace(M);
 
   // Compute fixed point.
-  gtpsa::GoFix(M_1, A_0);
+  gtpsa::ss_vect<gtpsa::tpsa>::GoFix(M_1, A_0);
 
   // Translate to fix point.
   M_Fl = gtpsa::compose(gtpsa::minv(A_0), gtpsa::compose(M_1, A_0));
@@ -1280,7 +1275,7 @@ gtpsa::tpsa gtpsa::Map_Norm
       (map1, gtpsa::minv
        (gtpsa::compose(R, t_map)));
     get_mns(map2, k-1, k-1, t_map);
-    hn = M_to_h(t_map);
+    M_to_h(t_map, hn);
     gn = get_g(nu_0[X_], nu_0[Y_], hn);
     g += gn;
     CtoR(hn, hn_re, hn_im);
@@ -1289,6 +1284,4 @@ gtpsa::tpsa gtpsa::Map_Norm
     h_DF_to_M(gn, Id, k, k, A);
     map1 = gtpsa::compose(gtpsa::minv(A), gtpsa::compose(map1, A));
   }
-
-  return K;
 }

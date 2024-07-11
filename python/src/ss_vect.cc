@@ -10,6 +10,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
+// #include <gtpsa/lielib.hpp>
 
 namespace py = pybind11;
 namespace gpy = gtpsa::python;
@@ -229,7 +230,7 @@ struct AddMethods
        })
        .def("__getattr__",
        [](const WrappedClass& self, const std::string& key){
-       return self.at(gpy::mapping_index(gpy::DefaultIndexMapping, key));
+       return self.at(gp::mapping_index(gpy::DefaultIndexMapping, key));
        })
        .def("__setattr__",
        [](      WrappedClass& self, const std::string& key, T& v){
@@ -293,6 +294,16 @@ struct AddMethods
       .def("compose", &WrappedClass::rcompose)
       .def("inv", &WrappedClass::rminv)
       .def("pinv", &WrappedClass::rpminv)
+
+      .def("M_to_h_DF", &gtpsa::M_to_h_DF<gtpsa::tpsa>)
+      .def("Map_Norm", &gtpsa::Map_Norm<gtpsa::tpsa>)
+      .def("M_to_h_DF", &gtpsa::M_to_h_DF<gtpsa::tpsa>)
+      .def("GoFix", &gtpsa::GoFix<gtpsa::tpsa>)
+
+      .def("get_mns", &gtpsa::get_mns<gtpsa::tpsa>)
+      // .def("CtoR", &gtpsa::CtoR);
+      // .def("RtoC", &gtpsa::RtoC);
+      // .def("h_DF_to_M", &gtpsa::h_DF_to_M);
 
       // .def(double()  + py::self)
       // .def(double()  - py::self)

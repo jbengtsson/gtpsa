@@ -296,6 +296,7 @@ namespace gtpsa {
 
   inline num_t norm(const tpsa& a) {
     // return a.gtpsa::mad::rnorm();
+    printf("\nnorm: not implemented\n");
     return 1e0;
   }
 
@@ -331,8 +332,5 @@ namespace gtpsa {
 #undef GTPSA_FUNC_ARG1
 
 } // namespace gtsa
-
-
-
 
 #endif /* _GTPSA_TPSA_H_ */

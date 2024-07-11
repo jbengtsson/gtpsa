@@ -72,9 +72,6 @@ Python interface:
 
 	../python/src/thor_scsi.cc
 
-		| inv
-		| pinv
-		| (compose)
 		| M_to_h_DF
 		| h_DF_to_M
 		| CtoR
@@ -107,6 +104,7 @@ and the implementation:
 		| # Support a .loc["x"] access to the elements.
 		|     template<class WrappedClass, class P_MGR, typename T>
 		|
+		| getOrder
 		| set_zero(void)
 		| truncate
 		| # E.g.:
@@ -114,13 +112,22 @@ and the implementation:
 
 	TPSA map operations:
 
-		| minv
-		| pminv
-		| compose (redundant)
-		| ...
+		| deriv
+		| (integ)
+		| mnrm
+		| fld2vec
+		| fgrad
+		| liebra
+		| exppb
+		| logpb
+		| compose
+		| inv
+		| pinv
 
 	../src/gtpsa/python/src/gtpsa.cc
 
+		| # For functions returning a tpsa.
+		|
 		| print
 		| (Sets *eps* 1e-30 vs. 0 for the *gtpsa* print function to supress printing of zeroes)
 		| length
@@ -335,6 +342,8 @@ The general *gtpsa* C++ <- C interface is in:
 
 	../src/gtpsa/c++/gtpsa/ss_vect.cc
 
+		| # For functions returning an ss_vect<>.
+		|
 		| # For general indexing:
 		|     idx()
 		|
@@ -359,22 +368,6 @@ The general *gtpsa* C++ <- C interface is in:
 		| exp
 		| log
 		| ...
-
-
-Not yet implemented:
-
-(For TPSA maps)
-
-	rminv
-	rpminv
-	rcompose
-	rvec2fld
-	fld2vec
-	fgrad
-	rliebra
-	rexppb
-	rlogpb
-	rderiv
 
 	../src/gtpsa/c++/gtpsa/lielib.cc
 
