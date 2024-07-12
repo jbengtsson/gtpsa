@@ -339,8 +339,10 @@ void  gtpsa::ss_vect<gtpsa::tpsa>::rcompose
 {
   FilterBasePointers <gtpsa::tpsa, gtpsa::TpsaTypeInfo> filter;
 
-  const bridge_container_type ma_b(filter.as_const(a.state_space)), mb_b
-    (filter.as_const(b.state_space));
+  const bridge_container_type
+    ma_b(filter.as_const(a.state_space)),
+    mb_b(filter.as_const(b.state_space));
+
   bridge_container_type mc_b(filter.as_non_const(this->state_space));
 
   mc_b.rcompose(ma_b, mb_b);

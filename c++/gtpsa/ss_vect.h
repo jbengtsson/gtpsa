@@ -724,7 +724,7 @@ namespace gtpsa {
 
   /* not inlined as quite some functionality behind the scenes */
   template<>
-  void  ss_vect<tpsa>::rcompose(const ss_vect<tpsa>& a, const ss_vect<tpsa>& b);
+  void ss_vect<tpsa>::rcompose(const ss_vect<tpsa>& a, const ss_vect<tpsa>& b);
 
   template<>
   void ss_vect<tpsa>::rminv(const ss_vect<tpsa>& a);
