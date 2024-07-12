@@ -208,6 +208,13 @@ static inline void coefficient_arrays(const gtpsa::tpsa& inst)
 }
 #endif
 
+void CtoR(const gtpsa::tpsa &a, gtpsa::tpsa &a_re, gtpsa::tpsa &a_im);
+gtpsa::tpsa RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im);
+void h_DF_to_M
+(const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
+ const int k2, gtpsa::ss_vect<gtpsa::tpsa> &M);
+
+
 template<class Cls>
 struct AddMethods
 {
@@ -423,6 +430,11 @@ struct AddMethods
 	     std::cerr << "done" << std::endl;
 	     return r;
 	   })
+
+      .def("CtoR", &CtoR)
+      .def("RtoC", &RtoC)
+      .def("h_DF_to_M", &h_DF_to_M)
+
       .def("get_mapping",     &Cls::getMapping)
       .def("set_mapping",     &Cls::setMapping)
       ;

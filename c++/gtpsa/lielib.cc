@@ -719,7 +719,7 @@ void CtoR(const gtpsa::tpsa &a, gtpsa::tpsa &a_re, gtpsa::tpsa &a_im)
 }
 
 
-gtpsa::tpsa  RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
+gtpsa::tpsa RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
 {
   const int n_dof = 2;
 

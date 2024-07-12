@@ -435,14 +435,6 @@ namespace gtpsa {
     (ss_vect<tpsa> &A_0, ss_vect<tpsa> &A_1, ss_vect<tpsa> &R, tpsa &g, tpsa &K)
       const;
 
-    // void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
-
-    // void RtoC(const tpsa &a_re, const tpsa &a_im);
-
-    // void h_DF_to_M
-    // (const tpsa &h_DF, const ss_vect<tpsa> &x, const int k1, const int k2,
-    //  ss_vect<tpsa> &M);
-
 
     /**
      * @btodo:
@@ -801,17 +793,6 @@ namespace gtpsa {
   (const ss_vect<T> &M, ss_vect<T> &A_0, ss_vect<T> &A_1, ss_vect<T> &R, T &g,
    T &K)
   { M.Map_Norm(A_0, A_1, R, g, K); }
-
-  // template<typename T>
-  // void CtoR(const T &a, T &a_re, T &a_im) {}
-
-  // template<typename T>
-  // void RtoC(const T &a_re, const T &a_im) {}
-
-  // template<typename T>
-  // void h_DF_to_M
-  // (const T &h_DF, const ss_vect<T> &x, const int k1, const int k2,
-  //  ss_vect<T> &M) {}
 
 
   inline ss_vect<tpsa> compose(const ss_vect<tpsa>& a, const ss_vect<tpsa>& b)
