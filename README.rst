@@ -28,11 +28,13 @@ References:
 
 	https://accelconf.web.cern.ch/ipac2022/papers/tupost029.pdf
 
-	L\. Deniau, C. Tomoiagă *Generalised Truncated Power Series Algebra for Fast Particle Accelerator Transport Maps* IPAC 2015
+	L\. Deniau, C. Tomoiagă *Generalised Truncated Power Series Algebra for Fast Particle Accelerator
+	Transport Maps* IPAC 2015
 
 	https://accelconf.web.cern.ch/ipac2015/papers/mopje039.pdf
 
-Turned out that the CEERN gtpsa map concatenator can not handle parameter dependence; so it had to be reimplemented.
+Turned out that the CEERN gtpsa map concatenator can not handle parameter dependence; so it had to be
+reimplemented.
 
 The C++ <- C gtpsa bridge interface is in:
 
@@ -51,7 +53,8 @@ The C++ <- C gtpsa bridge interface is in:
 	 */
 
 
-However, some of the key *gtpsa* map analysis functions are implemented in the *Lua* scripting language; see below.
+However, some of the key *gtpsa* map analysis functions are implemented in the *Lua* scripting language;
+see below.
 
 Hence, they have been re-implemented in C++.
 
@@ -142,6 +145,10 @@ and the implementation:
 		...
 
 The *gtpsa* C++ <- C functions are in:
+
+	../src/gtpsa/c++/gtpsa/python/objects_with_named_index.h
+
+		| Basis arithmetic operators: [+, -, *, /,...].
 
 	../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
 
@@ -475,7 +482,8 @@ Also, a few are in:
 
 		| make_symp (Make map symplectic, thesis by Liam Healy)
 		|
-			| L\. Healy *Lie-Algebraic Methods for Treating Lattice Parameter Errors in Particle Accelerators* Thesis, Univ. of Maryland, 1986.
+			| L\. Healy *Lie-Algebraic Methods for Treating Lattice Parameter Errors in Particle
+			| Accelerators* Thesis, Univ. of Maryland, 1986.
 		|
 		| gphys.normal_ng (Map normal form)
 		| normal_c        (Phasor basis)
