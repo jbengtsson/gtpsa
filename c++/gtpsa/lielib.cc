@@ -208,10 +208,16 @@ gtpsa::tpsa get_mns_1(const gtpsa::tpsa &a, const int no1, const int no2)
 
 template<>
 void gtpsa::ss_vect<gtpsa::tpsa>::get_mns
-(const gtpsa::ss_vect<gtpsa::tpsa> &x, const int no1, const int no2,
- gtpsa::ss_vect<gtpsa::tpsa> &y) const
+(const int no1, const int no2, gtpsa::ss_vect<gtpsa::tpsa> &y) const
 {
   const int ps_dim = 6;
+
+  const auto desc = (*this)[0].getDescription();
+  const auto no   = desc->maxOrd();
+
+  auto x = this->clone();
+
+  x._copyInPlace(*this);
 
   for (int k = 0; k < ps_dim; k++)
     y[k] = get_mns_1(x[k], no1, no2);
@@ -424,8 +430,7 @@ void scl_mns(gtpsa::tpsa &mn)
 
 
 template<>
-void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h
-(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::tpsa &h) const
+void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h(gtpsa::tpsa &h) const
 {
   // Intd in Forest's F77 LieLib.
   // E. Forest, M. Berz, J. Irwin 𝑁𝑜𝑟𝑚𝑎𝑙 𝐹𝑜𝑟𝑚 𝑀𝑒𝑡ℎ𝑜𝑑𝑠 𝑓𝑜𝑟 𝐶𝑜𝑚𝑝𝑙𝑖𝑐𝑎𝑡𝑒𝑑 𝑃𝑒𝑟𝑖𝑜𝑑𝑖𝑐 𝑆𝑦𝑠𝑡𝑒𝑚𝑠:
@@ -435,6 +440,11 @@ void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h
   // Integrate monomials:
   //   M -> exp(:h:)
   const int ps_dim = 6;
+
+  const auto desc = (*this)[0].getDescription();
+  const auto no   = desc->maxOrd();
+
+  auto M     = this->clone();
 
   auto mn   = M[0].clone();
   auto ps_k = M[0].clone();
@@ -581,8 +591,7 @@ void ss_vect_to_param
 
 
 template<>
-void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF
-(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::tpsa &h) const
+void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF(gtpsa::tpsa &h) const
 {
   // Liefact in Forest's F77 LieLib.
   // A. Dragt, J. Finn 𝐿𝑖𝑒 𝑆𝑒𝑟𝑖𝑒𝑠 𝑎𝑛𝑑 𝐼𝑛𝑣𝑎𝑟𝑖𝑎𝑛𝑡 𝐹𝑢𝑛𝑐𝑡𝑖𝑜𝑛𝑠 𝑓𝑜𝑟 𝐴𝑛𝑎𝑙𝑦𝑡𝑖𝑐 𝑆𝑦𝑚𝑝𝑙𝑒𝑐𝑡𝑖𝑐 𝑀𝑎𝑝𝑠
@@ -595,8 +604,10 @@ void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF
   ord_t no, po;
   int   np;
 
-  const auto desc0 = M[0].getDescription();
-  const auto nv    = M[0].getDescription()->getNv(&no, &np, &po);
+  const auto desc0 = (*this)[0].getDescription();
+  const auto nv    = desc0->getNv(&no, &np, &po);
+
+  auto M = this->clone();
 
   printf("\nM_to_h_DF\n");
 
@@ -610,10 +621,10 @@ void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF
 
     param_to_ss_vect(M, M1);
     M1[6].set(7, 0e0, 1e0);
-    gtpsa::ss_vect<gtpsa::tpsa>::M_to_h(M_to_M_fact(M1), h1);
+    M_to_M_fact(M1).M_to_h(h1);
     tps_to_param(h1, h);
   } else
-    gtpsa::ss_vect<gtpsa::tpsa>::M_to_h(M_to_M_fact(M), h);
+    M_to_M_fact(M).M_to_h(h);
 }
 
 
@@ -1155,10 +1166,14 @@ gtpsa::tpsa get_Ker(const gtpsa::tpsa &h)
 
 
 template<>
-void gtpsa::ss_vect<gtpsa::tpsa>::GoFix
-(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0) const
+void gtpsa::ss_vect<gtpsa::tpsa>::GoFix(gtpsa::ss_vect<gtpsa::tpsa> &A_0) const
 {
   const int n_dof = 2;
+
+  const auto desc = (*this)[0].getDescription();
+  const auto no   = desc->maxOrd();
+
+  auto M = this->clone();
 
   auto Id  = M.clone();
   auto x   = M.clone();
@@ -1201,17 +1216,17 @@ void gtpsa::ss_vect<gtpsa::tpsa>::GoFix
 
 template<>
 void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
-(const gtpsa::ss_vect<gtpsa::tpsa> &M, gtpsa::ss_vect<gtpsa::tpsa> &A_0,
- gtpsa::ss_vect<gtpsa::tpsa> &A_1, gtpsa::ss_vect<gtpsa::tpsa> &R,
- gtpsa::tpsa &g, gtpsa::tpsa &K) const
+(gtpsa::ss_vect<gtpsa::tpsa> &A_0, gtpsa::ss_vect<gtpsa::tpsa> &A_1,
+ gtpsa::ss_vect<gtpsa::tpsa> &R, gtpsa::tpsa &g, gtpsa::tpsa &K) const
 {
-  const auto desc = R[0].getDescription();
+  const auto desc = (*this)[0].getDescription();
   const auto no   = desc->maxOrd();
 
-  double
-    nu_0[2];
-  // MNFType
-  //   MNF = MNFType(desc, no);
+  double nu_0[2];
+
+  auto M = this->clone();
+
+  M._copyInPlace(*this);
 
   auto hn    = M[0].clone();
   auto hn_re = M[0].clone();
@@ -1235,7 +1250,7 @@ void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
   M_1._copyInPlace(M);
 
   // Compute fixed point.
-  gtpsa::ss_vect<gtpsa::tpsa>::GoFix(M_1, A_0);
+  M_1.GoFix(A_0);
 
   // Translate to fix point.
   M_Fl = gtpsa::compose(gtpsa::minv(A_0), gtpsa::compose(M_1, A_0));
@@ -1274,8 +1289,8 @@ void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
       gtpsa::compose
       (map1, gtpsa::minv
        (gtpsa::compose(R, t_map)));
-    get_mns(map2, k-1, k-1, t_map);
-    M_to_h(t_map, hn);
+    map2.get_mns(k-1, k-1, t_map);
+    t_map.M_to_h(hn);
     gn = get_g(nu_0[X_], nu_0[Y_], hn);
     g += gn;
     CtoR(hn, hn_re, hn_im);

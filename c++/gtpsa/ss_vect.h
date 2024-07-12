@@ -423,19 +423,17 @@ namespace gtpsa {
     }
 
 
-    void get_mns
-    (const ss_vect<tpsa> &x, const int no1, const int no2, ss_vect<tpsa> &y)
-      const;
+    void get_mns(const int no1, const int no2, ss_vect<tpsa> &y) const;
 
-    void M_to_h(const ss_vect<tpsa> &M, tpsa &h) const;
+    void M_to_h(tpsa &h) const;
 
-    void M_to_h_DF(const ss_vect<tpsa> &M, tpsa &h) const;
+    void M_to_h_DF(tpsa &h) const;
 
-    void GoFix(const ss_vect<tpsa> &M, ss_vect<tpsa> &A_0) const;
+    void GoFix(ss_vect<tpsa> &A_0) const;
 
     void Map_Norm
-    (const ss_vect<tpsa> &M, ss_vect<tpsa> &A_0, ss_vect<tpsa> &A_1,
-     ss_vect<tpsa> &R, tpsa &g, tpsa &K) const;
+    (ss_vect<tpsa> &A_0, ss_vect<tpsa> &A_1, ss_vect<tpsa> &R, tpsa &g, tpsa &K)
+      const;
 
     // void CtoR(const tpsa &a, tpsa &a_re, tpsa &a_im);
 
@@ -784,25 +782,25 @@ namespace gtpsa {
   template<typename T>
   void get_mns
   (const ss_vect<T> &x, const int no1, const int no2, ss_vect<T> &y)
-  { x.get_mns(x, no1, no2, y); }
+  { x.get_mns(no1, no2, y); }
 
   template<typename T>
   void M_to_h(const ss_vect<T> &M, T &h)
-  { M.M_to_h(M, h); }
+  { M.M_to_h(h); }
 
   template<typename T>
   void M_to_h_DF(const ss_vect<T> &M, T &h)
-  { M.M_to_h_DF(M, h); }
+  { M.M_to_h_DF(h); }
 
   template<typename T>
   void GoFix(const ss_vect<T> &M, ss_vect<T> &A_0)
-  { M.GoFix(M, A_0); }
+  { M.GoFix(A_0); }
 
   template<typename T>
   void Map_Norm
   (const ss_vect<T> &M, ss_vect<T> &A_0, ss_vect<T> &A_1, ss_vect<T> &R, T &g,
    T &K)
-  { M.Map_Norm(M, A_0, A_1, R, g, K); }
+  { M.Map_Norm(A_0, A_1, R, g, K); }
 
   // template<typename T>
   // void CtoR(const T &a, T &a_re, T &a_im) {}
