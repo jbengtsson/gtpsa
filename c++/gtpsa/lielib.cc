@@ -609,7 +609,7 @@ void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF(gtpsa::tpsa &h) const
 
   auto M = this->clone();
 
-  printf("\nM_to_h_DF\n");
+  printf("\nM_to_h_DF:\n");
 
   if (np != 0) {
     const auto desc1 = std::make_shared<gtpsa::desc>(nv+np, no);
@@ -801,7 +801,7 @@ Eigen::VectorXd compute_nu_symp(const Eigen::MatrixXd &M)
       nu[k] = 1e0 - nu[k];
   }
 
-  printf("\ncompute_nu_symp: nu_0 = [%7.5f, %7.5f]\n", nu[X_], nu[Y_]);
+  printf("  compute_nu_symp: nu_0 = [%7.5f, %7.5f]\n", nu[X_], nu[Y_]);
 
   return nu;
 }
@@ -1280,7 +1280,7 @@ void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
     K -= M_PI*nu_0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
   }
 
-  printf("\nMap_Norm: nu_0 = [%7.5f, %7.5f]\n", nu_0[X_], nu_0[Y_]);
+  printf("  Map_Norm: nu_0 = [%7.5f, %7.5f]\n", nu_0[X_], nu_0[Y_]);
 
   g.clear();
   for (auto k = 3; k <= no; k++) {
