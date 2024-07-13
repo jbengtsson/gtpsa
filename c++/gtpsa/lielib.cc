@@ -1280,7 +1280,7 @@ void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
     K -= M_PI*nu_0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
   }
 
-  printf("  Map_Norm: nu_0 = [%7.5f, %7.5f]\n", nu_0[X_], nu_0[Y_]);
+  printf("  Map_Norm:       nu_0 = [%7.5f, %7.5f]\n", nu_0[X_], nu_0[Y_]);
 
   g.clear();
   for (auto k = 3; k <= no; k++) {
