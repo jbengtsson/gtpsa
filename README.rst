@@ -107,6 +107,9 @@ and the implementation:
 		| # Support a .loc["x"] access to the elements.
 		|     template<class WrappedClass, class P_MGR, typename T>
 		|
+		| iloc[]
+		| # E.g.:
+		|     map.iloc[k]
 		| getOrder
 		| set_zero(void)
 		| truncate
@@ -378,11 +381,13 @@ The general *gtpsa* C++ <- C interface is in:
 
 	../src/gtpsa/c++/gtpsa/lielib.cc
 
-		| inv
-		| pinv
-		| compose
 		| M_to_h_DF
+		| h_DF_to_M
+		| CtoR
+		| RtoC
+		| GoFix
 		| Map_Norm
+
 
 TPSA descriptor operations:
 
