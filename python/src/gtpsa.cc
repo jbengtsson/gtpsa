@@ -221,26 +221,20 @@ struct AddMethods
   template<typename BCls, typename T>
   void add_methods_gtpsa_mad(py::class_<BCls> a_cls) {
 
-
     a_cls
       .def("length",          &Cls::length)
       .def("get_description", &Cls::getDescription)
       .def("clear",           &Cls::clear)
       .def("is_null",         &Cls::isNull)
       //.def("mono",            &Cls::mono)
-      .def("get",             [](const Cls& inst){
-	return inst.get();
+      .def("get",
+	   [](const Cls& inst){
+	     return inst.get();
       })
       .def("get",
-	   [](const Cls& inst, const std::vector<ord_t>& m,
-	      const bool check_first){
-	     if(check_first) {
-	       check_index(inst, m);
-	     }
-	     return inst.get(m);
-	   },
-	   "get coefficient at given powers", py::arg("vector of orders"),
-	   py::arg("check_index")=true)
+	   [](const Cls& inst, idx_t i){
+	     return inst.get(i);
+      })
       .def("get",
 	   [](const Cls& inst, const std::vector<ord_t>& m,
 	      const bool check_first){
@@ -260,11 +254,11 @@ struct AddMethods
 	     inst.set(m, a, b);
 	   })
       /*
-	.def("set",
-	[](Cls& inst, const gpy::index_mapping& p, const T& a, const T& b,
-	const bool check_first){
-	set(inst, p, a, b, gpy::DefaultIndexMapping, check_first);
-	})
+      .def("set",
+	   [](Cls& inst, const gpy::index_mapping& p, const T& a, const T& b,
+	      const bool check_first){
+	     set(inst, p, a, b, gpy::DefaultIndexMapping, check_first);
+	   })
       */
       .def("set",            [](Cls& inst, T a, T b){
 	inst.set(a, b);
@@ -275,7 +269,8 @@ struct AddMethods
       // make it more pythonic!
       .def("getv",           [](const Cls& inst, idx_t i)
       {
-	std::vector<T> tmp(inst.length()); inst.getv(i, &tmp);
+	std::vector<T> tmp(inst.length());
+	inst.getv(i, &tmp);
 	return py::array(py::cast(tmp));
       })
       .def("setv",           &Cls::setv)
@@ -371,7 +366,8 @@ struct AddMethods
 	       (inst, t_powers, *inst.getMapping().get(), check_first);
 	   },
 	   "get coefficient at given powers, specify powers in the dictionary",
-	   py::arg("dict of no zero order")=zero_powers, py::arg("check_index")=true
+	   py::arg("dict of no zero order")=
+	   zero_powers, py::arg("check_index")=true
 	   )
       .def("set",
 	   [](Cls& inst, const gpy::index_mapping_t& powers, const T& a,

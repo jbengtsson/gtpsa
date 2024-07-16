@@ -131,6 +131,8 @@ and the implementation:
 		| pinv
 
 	../src/gtpsa/python/src/gtpsa.cc
+and
+	../src/gtpsa/python/src/gtpsa_delegator.h
 
 		| # For functions returning a tpsa.
 		|
