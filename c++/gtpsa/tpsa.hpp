@@ -229,6 +229,7 @@ namespace gtpsa {
     friend inline tpsa operator/(const tpsa& a, const tpsa& b);
 #endif
     friend inline tpsa deriv(const tpsa& a,  const int v);
+    friend inline tpsa integ(const tpsa& a,  const int v);
 
     // required to implement real, imag etc..
     friend class ctpsa;
@@ -292,6 +293,9 @@ namespace gtpsa {
 
   inline tpsa deriv(const tpsa& a, const int v) {
     return tpsa(deriv(static_cast<const tpsa::base&>(a), v));
+  }
+  inline tpsa integ(const tpsa& a, const int v) {
+    return tpsa(integ(static_cast<const tpsa::base&>(a), v));
   }
 
   inline num_t norm(const tpsa& a) {
