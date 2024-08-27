@@ -164,9 +164,9 @@ namespace gtpsa::mad {
 
     void rgetOrder (const GTPSA_CLASS(Wrapper)& src, const int order)
     { return GTPSA_METH(getord)(src.getPtr(), this->getPtr(), order);}
-    void rderiv    (const GTPSA_CLASS(Wrapper)& src, const int iv   )
+    void rderiv    (const GTPSA_CLASS(Wrapper)& src, const int iv)
     { return GTPSA_METH(deriv)(src.getPtr(), this->getPtr(), iv);}
-    void rinteg    (const GTPSA_CLASS(Wrapper)& src, const int iv   )
+    void rinteg    (const GTPSA_CLASS(Wrapper)& src, const int iv)
     { return GTPSA_METH(integ)(src.getPtr(), this->getPtr(), iv);}
 
     /**

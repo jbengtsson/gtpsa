@@ -295,6 +295,9 @@ namespace gtpsa::python {
   template<class C>
   inline auto deriv(const gtpsa::python::ss_vect_element_access<C>&o, int iv)
   { return o.apply_with_int(iv, gtpsa::deriv); }
+  template<class C>
+  inline auto integ(const gtpsa::python::ss_vect_element_access<C>&o, int iv)
+  { return o.apply_with_int(iv, gtpsa::integ); }
 
   // operators for right side
   template<class C>

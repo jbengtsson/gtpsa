@@ -213,6 +213,7 @@ gtpsa::tpsa RtoC(const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im);
 void h_DF_to_M
 (const gtpsa::tpsa &h_DF, const gtpsa::ss_vect<gtpsa::tpsa> &x, const int k1,
  const int k2, gtpsa::ss_vect<gtpsa::tpsa> &M);
+gtpsa::tpsa get_mns_1(const gtpsa::tpsa &a, const int no1, const int no2);
 
 
 template<class Cls>
@@ -291,6 +292,11 @@ struct AddMethods
 	using namespace gtpsa::python;
 	using namespace gtpsa;
 	return deriv(inst, iv);
+      })
+      .def("integ",         [](const Cls& inst, int iv){
+	using namespace gtpsa::python;
+	using namespace gtpsa;
+	return integ(inst, iv);
       })
       .def("print",
 	   [](const Cls& inst, std::string name, double eps, bool nohdr){
@@ -430,6 +436,7 @@ struct AddMethods
       .def("CtoR", &CtoR)
       .def("RtoC", &RtoC)
       .def("h_DF_to_M", &h_DF_to_M)
+      .def("get_mns_1", &get_mns_1)
 
       .def("get_mapping",     &Cls::getMapping)
       .def("set_mapping",     &Cls::setMapping)
