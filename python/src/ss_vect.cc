@@ -280,7 +280,7 @@ struct AddMethods
 
       // ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp
       .def("getOrder", &WrappedClass::rgetOrder)
-      .def("deriv", &WrappedClass::rderiv)
+      // .def("deriv", &WrappedClass::rderiv)
       // .def("integ", &WrappedClass::rinteg)
 
       // ../src/gtpsa/c++/gtpsa/mad/container_wrapper.tpp
@@ -295,15 +295,11 @@ struct AddMethods
       .def("inv", &WrappedClass::rminv)
       .def("pinv", &WrappedClass::rpminv)
 
+      .def("GoFix", &gtpsa::GoFix<gtpsa::tpsa>)
       .def("M_to_h_DF", &gtpsa::M_to_h_DF<gtpsa::tpsa>)
       .def("Map_Norm", &gtpsa::Map_Norm<gtpsa::tpsa>)
-      .def("M_to_h_DF", &gtpsa::M_to_h_DF<gtpsa::tpsa>)
-      .def("GoFix", &gtpsa::GoFix<gtpsa::tpsa>)
 
       .def("get_mns", &gtpsa::get_mns<gtpsa::tpsa>)
-      // .def("CtoR", &gtpsa::CtoR);
-      // .def("RtoC", &gtpsa::RtoC);
-      // .def("h_DF_to_M", &gtpsa::h_DF_to_M);
 
       // .def(double()  + py::self)
       // .def(double()  - py::self)

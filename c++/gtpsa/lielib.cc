@@ -1198,7 +1198,7 @@ void gtpsa::ss_vect<gtpsa::tpsa>::GoFix(gtpsa::ss_vect<gtpsa::tpsa> &A_0) const
     A_0[k] -= Id[k];
   for (int k = 0; k < 2*n_dof; k++)
     // First index is 1.
-    w[k] = gtpsa::deriv(A_0[k], delta_+1);
+    w[k] = deriv(A_0[k], delta_+1);
   for (int k = 0; k < n_dof; k++) {
     v[2*k+1] = w[2*k];
     v[2*k] = -w[2*k+1];

@@ -387,12 +387,12 @@ void gtpsa::ss_vect<gtpsa::tpsa>::rgetOrder
   }
 }
 
-template<>
-void gtpsa::ss_vect<gtpsa::tpsa>::rderiv
-(const gtpsa::ss_vect<gtpsa::tpsa>& a, const int order)
-{
-  for(size_t i=0; i<this->state_space.size(); ++i){
-    (*this)[i].rderiv(a[i], order);
-  }
-}
+// template<>
+// void gtpsa::ss_vect<gtpsa::tpsa>::rderiv
+// (const gtpsa::ss_vect<gtpsa::tpsa>& a, const int order)
+// {
+//   for(size_t i=0; i<this->state_space.size(); ++i){
+//     (*this)[i].rderiv(a[i], order);
+//   }
+// }
 
