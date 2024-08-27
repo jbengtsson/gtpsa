@@ -75,11 +75,12 @@ E.g. deriv.
 
 Files:
 
-	../src/gtpsa/c++/gtpsa/tpsa.hpp
-	../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
-	../src/gtpsa/c++/gtpsa/intern/with_operators.h
-	../src/gtpsa/python/src/gtpsa_delegator.h
-	../src/gtpsa/python/src/gtpsa.cc
+	| ../src/gtpsa/c++/gtpsa/tpsa.hpp
+	| ../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
+	| ../src/gtpsa/c++/gtpsa/intern/with_operators.h
+	| ../src/gtpsa/python/src/gtpsa_delegator.h
+	| ../src/gtpsa/python/src/gtpsa.cc
+
 
 C++ -> Python Pybind11 Part
 ---------------------------
