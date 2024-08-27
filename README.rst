@@ -78,6 +78,7 @@ Files:
 	| ../src/gtpsa/c++/gtpsa/tpsa.hpp
 	| ../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
 	| ../src/gtpsa/c++/gtpsa/intern/with_operators.h
+	| ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp
 	| ../src/gtpsa/python/src/gtpsa_delegator.h
 	| ../src/gtpsa/python/src/gtpsa.cc
 
