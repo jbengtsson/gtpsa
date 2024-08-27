@@ -67,6 +67,20 @@ Data Types
 	| ssz_t int32_t
 
 
+
+Interfacing gtpsa Functions
+---------------------------
+
+E.g. deriv.
+
+Files:
+
+	../src/gtpsa/c++/gtpsa/tpsa.hpp
+	../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
+	../src/gtpsa/c++/gtpsa/intern/with_operators.h
+	../src/gtpsa/python/src/gtpsa_delegator.h
+	../src/gtpsa/python/src/gtpsa.cc
+
 C++ -> Python Pybind11 Part
 ---------------------------
 The *gtpsa* Python Pybind11 <- C++ part is in:
@@ -106,6 +120,9 @@ and the implementation:
 
 		| # Support a .loc["x"] access to the elements.
 		|     template<class WrappedClass, class P_MGR, typename T>
+		|
+		| # print (__str__) calls:
+		| pstr
 		|
 		| iloc[]
 		| # E.g.:
@@ -190,7 +207,7 @@ The *gtpsa* C++ <- C functions are in:
 		| set(void)
 		| ...
 
-		| # The 1st parameter is offset - 1 to skip constant part: 0..
+		| # The 1st parameter is the offset - set to 1, to skip constant part: 0..
 		| getv(idx_t i, std::vector<base_type> *v)
 		| setv(idx_t i, const std::vector<base_type> &v)
 
@@ -281,6 +298,9 @@ The *gtpsa* C++ <- C functions are in:
 
 	../src/gtpsa/c++/gtpsa/intern/with_operators.hpp
 
+		| # The Python interface for maps calls:
+		| pstr
+		| # which calls:
 		| show()
 		| # For TPSA vector: only prints leading order - *level* parameter not implemented.
 		| show(stdout, level)
