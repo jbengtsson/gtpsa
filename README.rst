@@ -71,16 +71,20 @@ Data Types
 Interfacing gtpsa Functions
 ---------------------------
 
-E.g. deriv.
+E.g. deriv, integ, and poisbra.
 
 Files:
 
-	| ../src/gtpsa/c++/gtpsa/tpsa.hpp
-	| ../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
-	| ../src/gtpsa/c++/gtpsa/intern/with_operators.h
-	| ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp
-	| ../src/gtpsa/python/src/gtpsa_delegator.h
-	| ../src/gtpsa/python/src/gtpsa.cc
+	| 1. Python: ../src/gtpsa/python/src/gtpsa.cc
+	| 2a.        ../src/gtpsa/c++/gtpsa/intern/with_operators.h
+	| 2b.        ../src/gtpsa/python/src/gtpsa_delegator.h
+
+	| 1. C++:    ../src/gtpsa/c++/gtpsa/tpsa.hpp
+	| 2a.        ../src/gtpsa/c++/gtpsa/intern/with_operators.hpp
+
+	| 3.         ../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
+	| 4.         ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp	
+	| 5. C:      ../src/gtpsa/mad-ng/src/mad_tpsa_ops.c
 
 
 C++ -> Python Pybind11 Part
