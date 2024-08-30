@@ -228,8 +228,9 @@ namespace gtpsa {
     friend inline tpsa operator*(const tpsa& a, const tpsa& b);
     friend inline tpsa operator/(const tpsa& a, const tpsa& b);
 #endif
-    friend inline tpsa deriv(const tpsa& a,  const int v);
-    friend inline tpsa integ(const tpsa& a,  const int v);
+    friend inline tpsa deriv(const tpsa& a, const int v);
+    friend inline tpsa integ(const tpsa& a, const int v);
+    friend inline tpsa poisbra(const tpsa& a, const tpsa& b, const int k);
 
     // required to implement real, imag etc..
     friend class ctpsa;
@@ -291,11 +292,13 @@ namespace gtpsa {
     return strm;
   }
 
-  inline tpsa deriv(const tpsa& a, const int v) {
-    return tpsa(deriv(static_cast<const tpsa::base&>(a), v));
-  }
-  inline tpsa integ(const tpsa& a, const int v) {
-    return tpsa(integ(static_cast<const tpsa::base&>(a), v));
+  inline tpsa deriv(const tpsa& a, const int v)
+  { return tpsa(deriv(static_cast<const tpsa::base&>(a), v)); }
+  inline tpsa integ(const tpsa& a, const int v)
+  { return tpsa(integ(static_cast<const tpsa::base&>(a), v)); }
+  inline tpsa poisbra(const tpsa& a, const tpsa& b, const int k) {
+    return tpsa(poisbra(static_cast<const tpsa::base&>(a),
+			static_cast<const tpsa::base&>(b), k));
   }
 
   inline num_t norm(const tpsa& a) {

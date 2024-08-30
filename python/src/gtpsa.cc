@@ -288,15 +288,20 @@ struct AddMethods
 	   py::arg("value"), py::arg("index_of_variable") = 0,
 	   py::arg("scale") = 0, py::arg("check_first") = true
 	   )
-      .def("deriv",         [](const Cls& inst, int iv){
+      .def("deriv",         [](const Cls& inst, const int iv){
 	using namespace gtpsa::python;
 	using namespace gtpsa;
 	return deriv(inst, iv);
       })
-      .def("integ",         [](const Cls& inst, int iv){
+      .def("integ",         [](const Cls& inst, const int iv){
 	using namespace gtpsa::python;
 	using namespace gtpsa;
 	return integ(inst, iv);
+      })
+      .def("poisbra",         [](const Cls& inst, const Cls& a, const int k){
+	using namespace gtpsa::python;
+	using namespace gtpsa;
+	return poisbra(inst, a, k);
       })
       .def("print",
 	   [](const Cls& inst, std::string name, double eps, bool nohdr){
@@ -420,18 +425,19 @@ struct AddMethods
 	   py::arg("value"), py::arg("index"), py::arg("scale") = 0,
 	   py::arg("check_first") = true
 	   )
-      .def("deriv",
-	   [](const Cls& inst, const std::string name)
-	   {
-	     using gtpsa::deriv;
-	     using gtpsa::python::deriv;
-	     std::cerr << "evaluating deriv... ";
-	     const int idx = inst.getMapping()->index(name) + 1;
-	     std::cerr << "using index idx " << idx;
-	     auto r = deriv(inst, idx);
-	     std::cerr << "done" << std::endl;
-	     return r;
-	   })
+
+      // .def("deriv",
+      // 	   [](const Cls& inst, const std::string name)
+      // 	   {
+      // 	     using gtpsa::deriv;
+      // 	     using gtpsa::python::deriv;
+      // 	     std::cerr << "evaluating deriv... ";
+      // 	     const int idx = inst.getMapping()->index(name) + 1;
+      // 	     std::cerr << "using index idx " << idx;
+      // 	     auto r = deriv(inst, idx);
+      // 	     std::cerr << "done" << std::endl;
+      // 	     return r;
+      // 	   })
 
       .def("CtoR", &CtoR)
       .def("RtoC", &RtoC)

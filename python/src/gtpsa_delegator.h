@@ -283,8 +283,16 @@ namespace gtpsa::python {
 
     inline auto apply_with_int
     (const int iv, tpsa_type (f)(const tpsa_type& a, const int iv)) const {
-      return TpsaWithNamedIndex
-	(this->getTpsaObjectIntern(), this->getMapping());
+      return
+	TpsaWithNamedIndex(this->getTpsaObjectIntern(), this->getMapping());
+    }
+
+    inline auto apply_2_with_int
+    (const int iv, const tpsa_type& b,
+     tpsa_type (f)(const tpsa_type& a, const tpsa_type& b, const int k)) const
+    {
+      return
+	TpsaWithNamedIndex(this->getTpsaObjectIntern(), this->getMapping());
     }
   };
 
@@ -293,11 +301,21 @@ namespace gtpsa::python {
 
   // overloading functions so that templated wrappers can be reused
   template<class C>
-  inline auto deriv(const gtpsa::python::ss_vect_element_access<C>&o, int iv)
+  inline auto deriv(const gtpsa::python::ss_vect_element_access<C>&o,
+		    const int iv)
   { return o.apply_with_int(iv, gtpsa::deriv); }
   template<class C>
-  inline auto integ(const gtpsa::python::ss_vect_element_access<C>&o, int iv)
+  inline auto integ(const gtpsa::python::ss_vect_element_access<C>&o,
+		    const int iv)
   { return o.apply_with_int(iv, gtpsa::integ); }
+  template<class C>
+  inline auto poisbra(const gtpsa::python::ss_vect_element_access<C>&o,
+		      const gtpsa::python::ss_vect_element_access<C>&a,
+		      const int k)
+  { printf("poisbra: not implemented.\n");
+    assert(false);
+    return o.apply_with_int(k, gtpsa::deriv);
+  }
 
   // operators for right side
   template<class C>

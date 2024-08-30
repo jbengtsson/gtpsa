@@ -168,6 +168,9 @@ namespace gtpsa::mad {
     { return GTPSA_METH(deriv)(src.getPtr(), this->getPtr(), iv);}
     void rinteg    (const GTPSA_CLASS(Wrapper)& src, const int iv)
     { return GTPSA_METH(integ)(src.getPtr(), this->getPtr(), iv);}
+    void rpoisbra  (const GTPSA_CLASS(Wrapper)& a,
+		    const GTPSA_CLASS(Wrapper)& b, const int k)
+    { return GTPSA_METH(poisbra)(a.getPtr(), b.getPtr(), this->getPtr(), k); }
 
     /**
      * @short set uid if != 0
