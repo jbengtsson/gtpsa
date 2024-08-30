@@ -233,6 +233,10 @@ namespace gtpsa {
   inline TpsaWithOp<T>  integ
   (const TpsaWithOp<T>& o, const int iv)
   { auto t = o.newFromThis(); t.rinteg(o, iv); return t; }
+  template<class T, typename = typename T::base_type>
+  inline TpsaWithOp<T>  poisbra
+  (const TpsaWithOp<T>& o, const TpsaWithOp<T>& a, const int k)
+  { auto t = o.newFromThis(); t.rpoisbra(o, a, k); return t; }
 #endif
 
 } //namespace gtpsa

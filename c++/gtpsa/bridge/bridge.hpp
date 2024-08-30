@@ -263,6 +263,9 @@ namespace gtpsa {
     { this->m_impl.rderiv(o.m_impl, iv); }
     inline void rinteg(const TpsaBridge<T>& o, const int iv)
     { this->m_impl.rinteg(o.m_impl, iv);   }
+    inline void rpoisbra
+    (const TpsaBridge<T>& a, const TpsaBridge<T>& b, const int k)
+    { this->m_impl.rpoisbra(a.m_impl, b.m_impl, k); }
 
     /* |                                                                |
        O----------------------------------------------------------------O */
