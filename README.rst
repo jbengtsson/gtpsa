@@ -33,7 +33,7 @@ References:
 
 	https://accelconf.web.cern.ch/ipac2015/papers/mopje039.pdf
 
-Turned out that the CEERN gtpsa map concatenator can not handle parameter dependence; so it had to be
+Turned out that the CERN gtpsa map concatenator can not handle parameter dependence; so it had to be
 reimplemented.
 
 The C++ <- C gtpsa bridge interface is in:
@@ -76,15 +76,47 @@ E.g. deriv, integ, and poisbra.
 Files:
 
 	| 1. Python: ../src/gtpsa/python/src/gtpsa.cc
-	| 2a.        ../src/gtpsa/c++/gtpsa/intern/with_operators.h
+	| 2a.        ../src/gtpsa/c++/gtpsa/intern/with_operators.hpp
 	| 2b.        ../src/gtpsa/python/src/gtpsa_delegator.h
+	| 3.         ../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
 
 	| 1. C++:    ../src/gtpsa/c++/gtpsa/tpsa.hpp
+	|		static_cast<const tpsa::base&>({tpsa parameter})
+	|		tpsa({return tpsa::base value})
+	|
 	| 2a.        ../src/gtpsa/c++/gtpsa/intern/with_operators.hpp
+	| 3.         ../src/gtpsa/c++/gtpsa/bridge/bridge.hpp
 
-	| 3.         ../src/gtpsa/c++/gtpsa/bridge/brigde.hpp
 	| 4.         ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp	
 	| 5. C:      ../src/gtpsa/mad-ng/src/mad_tpsa_ops.c
+
+
+Interfacing ss_vect<gtpsa> Functions
+---------------------------
+
+E.g. inv, pinv, and compose.
+
+Files:
+
+	| 1. Python: ../src/gtpsa/python/src/ss_vect.cc
+	| 2.         ../src/gtpsa/c++/gtpsa/ss_vect.h
+	| 3.         ../src/gtpsa/c++/gtpsa/ss_vect.cc
+	| 4.         ../src/gtpsa/c++/gtpsa/mad/container_wrapper.tpp
+	| 5. C:      ../src/gtpsa/mad-ng/src/mad_tpsa_comp.c
+
+
+Indexing from ss_vect_tpsa & conversion to tpsa (Should be refactored/simplified - i.e., implement the operator[])
+------------------------------------------------------------------------------------------------------------------
+
+	| E.g.:
+	|	map.x.to_tpsa or map.iloc[0].to_tpsa()
+	
+Files for to_tpsa:
+
+	| Python:
+	|	../src/gtpsa/python/src/gtpsa.cc
+	|	../src/gtpsa/python/src/gtpsa_delegator.h
+	|	../src/gtpsa/python/src/gtpsa_variant.cc
 
 
 C++ -> Python Pybind11 Part
