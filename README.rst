@@ -73,6 +73,12 @@ Interfacing gtpsa Functions
 
 E.g. deriv, integ, and poisbra.
 
+	| Cls in:
+	|
+	|   ../src/gtpsa/python/src/gtpsa.cc
+	|
+	|is either tpsa or gtpsa.
+
 Files:
 
 	| 1. Python: ../src/gtpsa/python/src/gtpsa.cc
@@ -89,6 +95,20 @@ Files:
 
 	| 4.         ../src/gtpsa/c++/gtpsa/mad/wrapper.tpp	
 	| 5. C:      ../src/gtpsa/mad-ng/src/mad_tpsa_ops.c
+
+
+Tpsa class -- data types
+------------------------
+
+	| ../src/gtpsa/python/src/gtpsa.cc
+	|
+	| "tpsa"                    gpy::TpsaWithNamedIndex
+	| "_TPSAWithOp"
+	| "_tpsa"         TpsaOp  = gtpsa::TpsaWithOp<gtpsa::TpsaTypeInfo>
+	|                 CtpsaOp = gtpsa::TpsaWithOp<gtpsa::CTpsaTypeInfo>
+	| "ctpsa"                   gpy::CTpsaWithNamedIndex
+	| "_CTPSAWithOp"
+	| "_ctpsa"                  gtpsa::CTpsaWithOp
 
 
 Interfacing ss_vect<gtpsa> Functions
