@@ -295,11 +295,15 @@ struct AddMethods
       //   with_operators.hpp    gtpsa::deriv          
       //   gtpsa_delegator.h     gtpsa::python::deriv
       // are being referenced.
-      .def("deriv", [](gtpsa::tpsa& self, const int iv)
-      { return self.deriv(iv); })
-      .def("integ", [](const Cls& self, const int iv)
+      .def("deriv",
+	   [](const gtpsa::tpsa& self, const int iv) -> gpy::TpsaWithNamedIndex
+	   { return deriv(self, iv); })
+      .def("integ",
+	   [](const gtpsa::tpsa& self, const int iv) -> gpy::TpsaWithNamedIndex
       {	return integ(self, iv); })
-      .def("poisbra", [](const Cls& self, const Cls& a, const int k)
+      .def("poisbra", []
+	   (const gtpsa::tpsa& self, const gtpsa::tpsa& a, const int k) ->
+	   gpy::TpsaWithNamedIndex
       {	return poisbra(self, a, k); })
 
       .def("print",
@@ -441,7 +445,10 @@ struct AddMethods
       .def("CtoR", &CtoR)
       .def("RtoC", &RtoC)
       .def("h_DF_to_M", &h_DF_to_M)
-      .def("get_mns_1", &get_mns_1)
+      .def("get_mns_1",
+	   [](const gtpsa::tpsa& self, const int no1, const int no2) ->
+	   gpy::TpsaWithNamedIndex
+	   { return get_mns_1(self, no1, no2); })
 
       .def("get_mapping",     &Cls::getMapping)
       .def("set_mapping",     &Cls::setMapping)
