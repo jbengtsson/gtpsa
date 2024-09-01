@@ -96,6 +96,10 @@ namespace gtpsa {
     inline TpsaWithOp& operator /= (const typename T::base_type& o )
     { this->set( 1e0/o,  0e0); return *this; }
 
+    // Avoid data type change for Python object.
+    inline TpsaWithOp& deriv(const int iv)
+    { auto r = this->newFromThis(); this->rderiv(r, iv); return *this;  }
+
 #ifndef GTSPA_ONLY_OPTIMISED_OPS
     /**
      * @brief negation
@@ -225,10 +229,6 @@ namespace gtpsa {
   (const typename T::base_type a, const TpsaWithOp<T>& b)
   { auto t = b.newFromThis(); t.set(0, a    ); return t / b; }
 
-  template<class T, typename = typename T::base_type>
-  inline TpsaWithOp<T>  deriv
-  (const TpsaWithOp<T>& o, const int iv)
-  { auto t = o.newFromThis(); t.rderiv(o, iv); return t; }
   template<class T, typename = typename T::base_type>
   inline TpsaWithOp<T>  integ
   (const TpsaWithOp<T>& o, const int iv)

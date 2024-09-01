@@ -288,21 +288,20 @@ struct AddMethods
 	   py::arg("value"), py::arg("index_of_variable") = 0,
 	   py::arg("scale") = 0, py::arg("check_first") = true
 	   )
-      .def("deriv",         [](const Cls& inst, const int iv){
-	using namespace gtpsa::python;
-	using namespace gtpsa;
-	return deriv(inst, iv);
-      })
-      .def("integ",         [](const Cls& inst, const int iv){
-	using namespace gtpsa::python;
-	using namespace gtpsa;
-	return integ(inst, iv);
-      })
-      .def("poisbra",         [](const Cls& inst, const Cls& a, const int k){
-	using namespace gtpsa::python;
-	using namespace gtpsa;
-	return poisbra(inst, a, k);
-      })
+
+      // Can't use:
+      //   .def("deriv", &Cls::deriv)
+      // because both:
+      //   with_operators.hpp    gtpsa::deriv          
+      //   gtpsa_delegator.h     gtpsa::python::deriv
+      // are being referenced.
+      .def("deriv", [](gtpsa::tpsa& self, const int iv)
+      { return self.deriv(iv); })
+      .def("integ", [](const Cls& self, const int iv)
+      {	return integ(self, iv); })
+      .def("poisbra", [](const Cls& self, const Cls& a, const int k)
+      {	return poisbra(self, a, k); })
+
       .def("print",
 	   [](const Cls& inst, std::string name, double eps, bool nohdr){
 	     FILE* f = stdout;
@@ -311,8 +310,8 @@ struct AddMethods
 	   "print the cofficients to stdout using c's stdout",
 	   py::arg("name") = "", py::arg("eps") = 1e-30 ,
 	   py::arg("nohdr") = false)
-      .def_property("name",  &Cls::name, &Cls::setName)
-      .def_property("uid",  [](Cls& inst){ return inst.uid(0);}, &Cls::uid)
+      .def_property("name", &Cls::name, &Cls::setName)
+      .def_property("uid", [](Cls& inst){ return inst.uid(0);}, &Cls::uid)
       .def_property_readonly("order", &Cls::order)
       ;
   }
@@ -493,8 +492,6 @@ namespace gtpsa::python {
 
 void gpy::py_gtpsa_init_tpsa(py::module &m)
 {
-
-
   m.def("_powers_from_type_and_dict", &powers_from_type_and_dict);
 
   typedef gtpsa::TpsaWithOp<gtpsa::TpsaTypeInfo>   TpsaOp;
@@ -624,7 +621,7 @@ void gpy::py_gtpsa_init_tpsa(py::module &m)
 
 #define GTPSA_FUNC_ARG1(func)						   \
   m.def(#func,       py::overload_cast<const gtpsa::ctpsa&               > \
-	(&gtpsa:: func     ));						\
+	(&gtpsa:: func     ));						   \
   m.def(#func  "_",  py::overload_cast<const gtpsa::ctpsa&, gtpsa::ctpsa*> \
 	(&gtpsa:: func ## _));
 #include <gtpsa/funcs.h>

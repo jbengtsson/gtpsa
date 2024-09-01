@@ -220,6 +220,9 @@ namespace gtpsa::python {
     auto& operator /= (const ss_vect_element_access& o )
     { this->getTpsaObjectIntern() /= o.getTpsaObjectIntern(); return *this; }
 
+    inline auto deriv(const int iv)
+    { this->getTpsaObjectIntern(iv, gtpsa::deriv); return *this; }
+
     auto  operator +  (const base_type  o ) const
     { return this->getTpsaObject() + (o); }
     auto  operator -  (const base_type  o ) const
@@ -300,10 +303,6 @@ namespace gtpsa::python {
   ss_vect_tpsa_elem_access_t;
 
   // overloading functions so that templated wrappers can be reused
-  template<class C>
-  inline auto deriv(const gtpsa::python::ss_vect_element_access<C>&o,
-		    const int iv)
-  { return o.apply_with_int(iv, gtpsa::deriv); }
   template<class C>
   inline auto integ(const gtpsa::python::ss_vect_element_access<C>&o,
 		    const int iv)
