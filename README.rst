@@ -289,7 +289,9 @@ The *gtpsa* C++ <- C functions are in:
 	../src/gtpsa/c++/gtpsa/mad/wrapper.tpp
 
 		| print()
-		| print("", 1e-30, 0, stdout) (For TPSA vector; use cout << for map)
+		| print("", 1e-30, 0, stdout)
+		|
+		| For TPSA vector -- use cout << for map.
 		|
 		| rgetOrder
 		|
