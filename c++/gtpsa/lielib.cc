@@ -867,7 +867,6 @@ Eigen::VectorXd compute_dispersion(const Eigen::MatrixXd &M)
 
   auto D = M.col(delta_).segment(0, n_dim);
   auto M_4x4 = M.block(0, 0, n_dim, n_dim);
-
   return (Id-M_4x4).inverse()*D;
 }
 
@@ -875,7 +874,8 @@ Eigen::VectorXd compute_dispersion(const Eigen::MatrixXd &M)
 Eigen::MatrixXd compute_A_0(const Eigen::MatrixXd &M)
 {
   const int
-    n_dof = 2;
+    n_dof = 2,
+    n_dim = 2*n_dof + 1;
 
   Eigen::MatrixXd
     A_0 = Eigen::MatrixXd::Identity(6, 6);
@@ -892,6 +892,7 @@ Eigen::MatrixXd compute_A_0(const Eigen::MatrixXd &M)
     }
   }
 
+  print_mat("compute_A_0 - A_0:\n", A_0);
   return A_0;
 }
 
@@ -1175,10 +1176,10 @@ void gtpsa::ss_vect<gtpsa::tpsa>::GoFix(gtpsa::ss_vect<gtpsa::tpsa> &A_0) const
 
   auto M = this->clone();
 
-  auto Id  = M.clone();
-  auto x   = M.clone();
-  auto v   = M.clone();
-  auto w   = M.clone();
+  auto Id = M.clone();
+  auto x  = M.clone();
+  auto v  = M.clone();
+  auto w  = M.clone();
 
   Id.set_identity();
   v.set_identity();
@@ -1250,7 +1251,15 @@ void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
   M_1._copyInPlace(M);
 
   // Compute fixed point.
+#if 0
+  // GoFix needs to be debugged/fixed for linear despersion.
   M_1.GoFix(A_0);
+  std::cout << "\nMap_Norm - A_0:\n" << A_0;
+#else
+  auto A_0_mat = compute_A_0(get_lin_map(M));
+  A_0 = mat2map(desc, A_0_mat);
+  A_0[6].setVariable(0e0, 7, 0e0);
+#endif
 
   // Translate to fix point.
   M_Fl = gtpsa::compose(gtpsa::minv(A_0), gtpsa::compose(M_1, A_0));
