@@ -26,7 +26,7 @@ template<typename T>
 void gtpsa::ss_vect<T>::show
 (std::ostream& strm, int level, bool with_endl) const
 {
-  const int precision = 5;
+  const int precision = 6;
 
   strm << std::scientific << std::setprecision(precision);
   strm  << "\ntpsa cst:\n";
