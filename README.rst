@@ -68,6 +68,20 @@ Data Types
 
 
 
+Print ss_vect
+-------------
+
+Files:
+
+	| ../src/gtpsa/python/src/gtpsa.cc
+	| ../src/gtpsa/c++/gtpsa/ss_vect.h
+	| ../src/gtpsa/c++/gtpsa/ss_vect.cc
+
+Function:
+
+	| show
+
+
 Interfacing gtpsa Functions
 ---------------------------
 
