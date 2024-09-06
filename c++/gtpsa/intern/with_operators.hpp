@@ -228,7 +228,7 @@ namespace gtpsa {
 
   template<class T, typename = typename T::base_type>
   inline TpsaWithOp<T> deriv(const TpsaWithOp<T>& o, const int iv)
-  { auto t = o.newFromThis(); t.rinteg(o, iv); return t; }
+  { auto t = o.newFromThis(); t.rderiv(o, iv); return t; }
   template<class T, typename = typename T::base_type>
   inline TpsaWithOp<T> integ(const TpsaWithOp<T>& o, const int iv)
   { auto t = o.newFromThis(); t.rinteg(o, iv); return t; }
