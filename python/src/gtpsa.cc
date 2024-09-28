@@ -215,6 +215,13 @@ void h_DF_to_M
  const int k2, gtpsa::ss_vect<gtpsa::tpsa> &M);
 gtpsa::tpsa get_mns_1(const gtpsa::tpsa &a, const int no1, const int no2);
 
+inline void rRtoC
+(gtpsa::tpsa &r, const gtpsa::tpsa &a_re, const gtpsa::tpsa &a_im)
+{ r = RtoC(a_re, a_im); }
+inline void rget_mns_1
+(gtpsa::tpsa &r, const gtpsa::tpsa &a, const int no1, const int no2)
+{ r = get_mns_1(a, no1, no2); }
+
 
 template<class Cls>
 struct AddMethods
@@ -443,12 +450,15 @@ struct AddMethods
       // 	   })
 
       .def("CtoR", &CtoR)
-      .def("RtoC", &RtoC)
+      .def("RtoC",
+	   [](gtpsa::tpsa& self, const gtpsa::tpsa& a_re,
+	      const gtpsa::tpsa& a_im)
+	     { rRtoC(self, a_re, a_im); })
       .def("h_DF_to_M", &h_DF_to_M)
       .def("get_mns_1",
-	   [](const gtpsa::tpsa& self, const int no1, const int no2) ->
-	   gpy::TpsaWithNamedIndex
-	   { return get_mns_1(self, no1, no2); })
+	   [](gtpsa::tpsa& self, const gtpsa::tpsa& a, const int no1,
+	      const int no2)
+	   { rget_mns_1(self, a, no1, no2); })
 
       .def("get_mapping",     &Cls::getMapping)
       .def("set_mapping",     &Cls::setMapping)
