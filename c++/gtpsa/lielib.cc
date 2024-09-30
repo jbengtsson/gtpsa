@@ -609,8 +609,6 @@ void gtpsa::ss_vect<gtpsa::tpsa>::M_to_h_DF(gtpsa::tpsa &h) const
 
   auto M = this->clone();
 
-  printf("\nM_to_h_DF:\n");
-
   if (np != 0) {
     const auto desc1 = std::make_shared<gtpsa::desc>(nv+np, no);
     const auto desc2 = std::make_shared<gtpsa::desc>(nv, no, np, no);
@@ -892,7 +890,6 @@ Eigen::MatrixXd compute_A_0(const Eigen::MatrixXd &M)
     }
   }
 
-  print_mat("compute_A_0 - A_0:\n", A_0);
   return A_0;
 }
 
