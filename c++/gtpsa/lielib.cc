@@ -799,8 +799,6 @@ Eigen::VectorXd compute_nu_symp(const Eigen::MatrixXd &M)
       nu[k] = 1e0 - nu[k];
   }
 
-  printf("  compute_nu_symp: nu_0 = [%7.5f, %7.5f]\n", nu[X_], nu[Y_]);
-
   return nu;
 }
 
@@ -1285,8 +1283,6 @@ void gtpsa::ss_vect<gtpsa::tpsa>::Map_Norm
     nu_0[k] /= 2e0*M_PI;
     K -= M_PI*nu_0[k]*(sqr(Id[2*k])+sqr(Id[2*k+1]));
   }
-
-  printf("  Map_Norm:        nu_0 = [%7.5f, %7.5f]\n", nu_0[X_], nu_0[Y_]);
 
   g.clear();
   for (auto k = 3; k <= no; k++) {
