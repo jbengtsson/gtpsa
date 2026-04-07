@@ -485,13 +485,12 @@ void gpy::py_gtpsa_init_ss_vect(py::module &m)
 	 py::arg("place_holder"),
 	 py::arg("index_mapping") = gpy::default_index_mapping_ptr
 	 )
-    .def_property_readonly("loc",          [](ss_vect_dbl_py_t &self) {
+    .def_property_readonly("loc",py::cpp_function([](ss_vect_dbl_py_t &self) {
       return ss_vect_dbl_list_access_loc_t(self.getPtr());
-    }  , py::keep_alive<1, 0>() )
-    .def_property_readonly("iloc",         [](ss_vect_dbl_py_t &self) {
+    }))
+    .def_property_readonly("iloc",py::cpp_function([](ss_vect_dbl_py_t &self) {
       return ss_vect_dbl_list_access_iloc_t(self.getPtr());
-    } , py::keep_alive<0, 1>()
-      )
+    }))
     // .def("cst", &ss_vect_dbl_py_t::cst,  py::keep_alive<1, 0>())
     /*
       .def("__dir__",      [](const ss_vect_dbl_py_t& self){
@@ -581,7 +580,7 @@ void gpy::py_gtpsa_init_ss_vect(py::module &m)
 	     o.getTpsaObjectAsReference();
 	 })
     // not taking reference properly yet
-    .def_property_readonly("iloc",          [](ss_vect_tpsa_py_t &self) {
+    .def_property_readonly("iloc", py::cpp_function([](ss_vect_tpsa_py_t &self) {
       // std::cerr << "providing iloc access for " << &self;
       auto tmp =  ss_vect_tpsa_list_access_iloc_t(self.getPtr());
       // std::cerr << " returning " << &tmp;
@@ -589,10 +588,10 @@ void gpy::py_gtpsa_init_ss_vect(py::module &m)
       // std::cerr
       // 	<< " getVector " <<  vec <<  " keepalive <0, 1> " <<std::endl;
       return tmp;
-    }, py::keep_alive<0, 1>() )
-    .def_property_readonly("loc",          [](ss_vect_tpsa_py_t &self) {
+    }))
+    .def_property_readonly("loc", py::cpp_function([](ss_vect_tpsa_py_t &self) {
       return ss_vect_tpsa_list_access_loc_t(self.getPtr());
-    } , py::keep_alive<0, 1>())
+    }))
     .def("cst", &ss_vect_tpsa_py_t::cst, py::return_value_policy::move)
     .def(py::self + py::self)
     .def(py::self - py::self)
